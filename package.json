@@ -1,6 +1,6 @@
 {
   "name": "swayjs",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "The best web framework for Node.js",
   "main": "src/index.ts",
   "keywords": [
