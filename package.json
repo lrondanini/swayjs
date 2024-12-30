@@ -15,5 +15,15 @@
   "bugs": {
     "url": "https://github.com/lrondanini/swayjs/issues"
   },
-  "homepage": "https://github.com/lrondanini/swayjs#readme"
+  "homepage": "https://github.com/lrondanini/swayjs#readme",
+  "dependencies": {
+    "find-my-way": "^9.1.0",
+    "typescript": "^5.6.3",
+    "vary": "^1.1.2"
+  },
+  "devDependencies": {
+    "ts-morph": "^24.0.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2"
+  }
 }
