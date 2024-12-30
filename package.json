@@ -26,10 +26,10 @@
   "dependencies": {
     "find-my-way": "^9.1.0",
     "typescript": "^5.6.3",
-    "vary": "^1.1.2"
+    "vary": "^1.1.2",
+    "ts-morph": "^24.0.0"
   },
   "devDependencies": {
-    "ts-morph": "^24.0.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2"
   }
