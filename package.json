@@ -28,7 +28,8 @@
     "url": "https://github.com/lrondanini/swayjs/issues"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "publish": "npm publish --access public"
   },
   "dependencies": {
     "find-my-way": "^9.1.0",

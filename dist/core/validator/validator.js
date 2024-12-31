@@ -1,19 +1,16 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Validator = void 0;
-const types_validators_1 = require("./types-validators");
-const builder_1 = require("./builder");
-class Validator {
+import { validateContains, validateFormat, validateIsType, validateMaxLength, validateMinLength } from "./types-validators";
+import { BaseTypes, ValidationRule } from "./builder";
+export class Validator {
     constructor() {
         this.allSchemas = {};
         this.customValidationFunctions = {};
         this.VALIDATE_FUNCTIONS = {};
-        this.VALIDATE_FUNCTIONS[builder_1.ValidationRule.IsType] = types_validators_1.validateIsType;
-        this.VALIDATE_FUNCTIONS[builder_1.ValidationRule.MaxLength] = types_validators_1.validateMaxLength;
-        this.VALIDATE_FUNCTIONS[builder_1.ValidationRule.MinLength] = types_validators_1.validateMinLength;
-        this.VALIDATE_FUNCTIONS[builder_1.ValidationRule.Contains] = types_validators_1.validateContains;
-        this.VALIDATE_FUNCTIONS[builder_1.ValidationRule.Format] = types_validators_1.validateFormat;
-        this.VALIDATE_FUNCTIONS[builder_1.ValidationRule.Custom] = this.validateWithCustomFunction.bind(this);
+        this.VALIDATE_FUNCTIONS[ValidationRule.IsType] = validateIsType;
+        this.VALIDATE_FUNCTIONS[ValidationRule.MaxLength] = validateMaxLength;
+        this.VALIDATE_FUNCTIONS[ValidationRule.MinLength] = validateMinLength;
+        this.VALIDATE_FUNCTIONS[ValidationRule.Contains] = validateContains;
+        this.VALIDATE_FUNCTIONS[ValidationRule.Format] = validateFormat;
+        this.VALIDATE_FUNCTIONS[ValidationRule.Custom] = this.validateWithCustomFunction.bind(this);
     }
     addSchema(route, methodName, rules) {
         this.allSchemas[route + "-" + methodName] = rules;
@@ -45,25 +42,25 @@ class Validator {
         let parsedValue = value;
         for (let i = 0; i < p.rules.and.length; i++) {
             const r = p.rules.and[i];
-            if (r.rule === builder_1.ValidationRule.IsObject) {
+            if (r.rule === ValidationRule.IsObject) {
                 if (typeof value === 'string') {
                     value = JSON.parse(value);
                 }
                 parsedValue = this.parseQueryString_Object(value, r);
             }
-            else if (r.rule === builder_1.ValidationRule.IsArray) {
-                if (typeof value === 'string' && r.type != builder_1.BaseTypes.String) {
+            else if (r.rule === ValidationRule.IsArray) {
+                if (typeof value === 'string' && r.type != BaseTypes.String) {
                     value = JSON.parse(value);
                 }
                 parsedValue = this.parseQueryString_Array(value, r);
             }
-            else if (r.rule === builder_1.ValidationRule.IsType) {
-                if (r.type === builder_1.BaseTypes.Number) {
+            else if (r.rule === ValidationRule.IsType) {
+                if (r.type === BaseTypes.Number) {
                     if (typeof value === 'string') {
                         parsedValue = JSON.parse(value);
                     }
                 }
-                else if (r.type === builder_1.BaseTypes.Boolean) {
+                else if (r.type === BaseTypes.Boolean) {
                     if (typeof value === 'string') {
                         parsedValue = parsedValue.toLowerCase() === 'true' ? true : false;
                     }
@@ -73,25 +70,25 @@ class Validator {
         for (let j = 0; j < p.rules.or.length; j++) {
             const orR = p.rules.or[j];
             for (const r of orR) {
-                if (r.rule === builder_1.ValidationRule.IsObject) {
+                if (r.rule === ValidationRule.IsObject) {
                     if (typeof value === 'string') {
                         value = JSON.parse(value);
                     }
                     parsedValue = this.parseQueryString_Object(value, r);
                 }
-                else if (r.rule === builder_1.ValidationRule.IsArray) {
-                    if (typeof value === 'string' && r.type != builder_1.BaseTypes.String) {
+                else if (r.rule === ValidationRule.IsArray) {
+                    if (typeof value === 'string' && r.type != BaseTypes.String) {
                         value = JSON.parse(value);
                     }
                     parsedValue = this.parseQueryString_Array(value, r);
                 }
-                else if (r.rule === builder_1.ValidationRule.IsType) {
-                    if (r.type === builder_1.BaseTypes.Number) {
+                else if (r.rule === ValidationRule.IsType) {
+                    if (r.type === BaseTypes.Number) {
                         if (typeof value === 'string') {
                             parsedValue = JSON.parse(value);
                         }
                     }
-                    else if (r.type === builder_1.BaseTypes.Boolean) {
+                    else if (r.type === BaseTypes.Boolean) {
                         if (typeof value === 'string') {
                             parsedValue = parsedValue.toLowerCase() === 'true' ? true : false;
                         }
@@ -103,25 +100,25 @@ class Validator {
     }
     parseValue(value, r) {
         let parsedValue = value;
-        if (r.rule === builder_1.ValidationRule.IsObject) {
+        if (r.rule === ValidationRule.IsObject) {
             if (typeof value === 'string') {
                 value = JSON.parse(value);
             }
             parsedValue = this.parseQueryString_Object(value, r);
         }
-        else if (r.rule === builder_1.ValidationRule.IsArray) {
-            if (typeof value === 'string' && r.type != builder_1.BaseTypes.String) {
+        else if (r.rule === ValidationRule.IsArray) {
+            if (typeof value === 'string' && r.type != BaseTypes.String) {
                 value = JSON.parse(value);
             }
             parsedValue = this.parseQueryString_Array(value, r);
         }
-        else if (r.rule === builder_1.ValidationRule.IsType) {
-            if (r.type === builder_1.BaseTypes.Number) {
+        else if (r.rule === ValidationRule.IsType) {
+            if (r.type === BaseTypes.Number) {
                 if (typeof value === 'string') {
                     parsedValue = JSON.parse(value);
                 }
             }
-            else if (r.type === builder_1.BaseTypes.Boolean) {
+            else if (r.type === BaseTypes.Boolean) {
                 if (typeof value === 'string') {
                     parsedValue = parsedValue.toLowerCase() === 'true' ? true : false;
                 }
@@ -146,7 +143,7 @@ class Validator {
         let parsedValue = value;
         const exptectedType = rule.type;
         if (Array.isArray(value)) {
-            if (exptectedType === builder_1.BaseTypes.Object) {
+            if (exptectedType === BaseTypes.Object) {
                 let tmp = [];
                 for (var i = 0; i < value.length; i++) {
                     tmp.push(this.parseQueryString_Object(value[i], rule));
@@ -181,10 +178,10 @@ class Validator {
             }
             else {
                 let passed = false;
-                if (r.rule === builder_1.ValidationRule.IsObject) {
+                if (r.rule === ValidationRule.IsObject) {
                     passed = this.validateObject(value, r, errors);
                 }
-                else if (r.rule === builder_1.ValidationRule.IsArray) {
+                else if (r.rule === ValidationRule.IsArray) {
                     passed = this.validateIsArray(value, r, errors);
                 }
                 else {
@@ -207,10 +204,10 @@ class Validator {
                 }
                 else {
                     let passed = false;
-                    if (r.rule === builder_1.ValidationRule.IsObject) {
+                    if (r.rule === ValidationRule.IsObject) {
                         passed = this.validateObject(value, r, errors);
                     }
-                    else if (r.rule === builder_1.ValidationRule.IsArray) {
+                    else if (r.rule === ValidationRule.IsArray) {
                         passed = this.validateIsArray(value, r, errors);
                     }
                     else {
@@ -257,10 +254,10 @@ class Validator {
     validateIsArray(value, rule, errors) {
         const exptectedType = rule.type;
         if (Array.isArray(value)) {
-            if (exptectedType === builder_1.BaseTypes.Any) {
+            if (exptectedType === BaseTypes.Any) {
                 return true;
             }
-            else if (exptectedType === builder_1.BaseTypes.Enum) {
+            else if (exptectedType === BaseTypes.Enum) {
                 const possibleValues = rule.value;
                 for (const i of value) {
                     if (possibleValues.indexOf(i) === -1) {
@@ -269,7 +266,7 @@ class Validator {
                     }
                 }
             }
-            else if (exptectedType === builder_1.BaseTypes.Object) {
+            else if (exptectedType === BaseTypes.Object) {
                 for (var i = 0; i < value.length; i++) {
                     this.validateObject(value[i], rule, errors);
                 }
@@ -289,5 +286,4 @@ class Validator {
         return false;
     }
 }
-exports.Validator = Validator;
 //# sourceMappingURL=validator.js.map

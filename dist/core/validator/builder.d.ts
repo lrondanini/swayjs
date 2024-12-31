@@ -1,5 +1,4 @@
 import { ParameterDeclaration, TypeChecker } from "ts-morph";
-import { Validator } from "./validator";
 export declare enum ValidationRule {
     IsType = "IsType",
     IsArray = "IsArray",
@@ -42,7 +41,6 @@ export default class ValidatorFactory {
     private currentParsedFile;
     private currentParsedClass;
     constructor();
-    testCreateValidator(): Validator;
     parseParameter(param: ParameterDeclaration, typeChecker: TypeChecker): PropRules;
     private getEnumValues;
     private parseProperty;

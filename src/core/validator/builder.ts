@@ -53,46 +53,46 @@ export default class ValidatorFactory {
   constructor() {
   }
 
-  testCreateValidator(): Validator {
-    const validator = new Validator();
-    const project = new Project();
-    const sourceFiles = project.addSourceFilesAtPaths(`./routes/test.ts`);
+  // testCreateValidator(): Validator {
+  //   const validator = new Validator();
+  //   const project = new Project();
+  //   const sourceFiles = project.addSourceFilesAtPaths(`./routes/test.ts`);
 
-    sourceFiles.forEach((sourceFile) => {
-      this.currentParsedFile = sourceFile.getFilePath();
+  //   sourceFiles.forEach((sourceFile) => {
+  //     this.currentParsedFile = sourceFile.getFilePath();
 
-      const classes = sourceFile.getClasses();
-      classes.forEach((classDef) => {
-        // console.log(classDef.getName());
-        classDef.getImplements().forEach((impl) => {
-          const requiresValidation = impl.getText().toLowerCase() === 'requiresvalidation';
-          if (requiresValidation) {
-            //class with functions to validate:
-            const methods = classDef.getMethods();
-            methods.forEach((method) => {
-              //in reality here we parse only routes methods.....Get, Post, .....
-              //here for testing we parse them all
+  //     const classes = sourceFile.getClasses();
+  //     classes.forEach((classDef) => {
+  //       // console.log(classDef.getName());
+  //       classDef.getImplements().forEach((impl) => {
+  //         const requiresValidation = impl.getText().toLowerCase() === 'requiresvalidation';
+  //         if (requiresValidation) {
+  //           //class with functions to validate:
+  //           const methods = classDef.getMethods();
+  //           methods.forEach((method) => {
+  //             //in reality here we parse only routes methods.....Get, Post, .....
+  //             //here for testing we parse them all
               
-              const validationRules: PropRules[] = [];
-              method.getParameters().forEach((param) => {
-                //PROD will need method name (to map the route methods), validator for the param
-                this.currentParsedClass = classDef.getName();
-                validationRules.push(this.parseParameter(param, project.getTypeChecker()));
-              });
+  //             const validationRules: PropRules[] = [];
+  //             method.getParameters().forEach((param) => {
+  //               //PROD will need method name (to map the route methods), validator for the param
+  //               this.currentParsedClass = classDef.getName();
+  //               validationRules.push(this.parseParameter(param, project.getTypeChecker()));
+  //             });
 
-              // console.log(validationRules);
-              validator.addSchema(classDef.getName(), method.getName(), validationRules);
-            });
+  //             // console.log(validationRules);
+  //             validator.addSchema(classDef.getName(), method.getName(), validationRules);
+  //           });
 
             
-          }
-        });
-      });
-    });
+  //         }
+  //       });
+  //     });
+  //   });
 
-    return validator;
+  //   return validator;
 
-  }
+  // }
 
   parseParameter(param: ParameterDeclaration, typeChecker: TypeChecker): PropRules {
 
@@ -230,7 +230,7 @@ export default class ValidatorFactory {
   private parseObject(filPath: string, objectName: string): PropRules[] {
     const validationRules: PropRules[] = [];
     const project = new Project();
-
+    
     let sourceFiles = project.addSourceFilesAtPaths(filPath + ".ts");
 
     if (sourceFiles.length == 0) {

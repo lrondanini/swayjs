@@ -1,9 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseTypes = exports.ValidationRule = void 0;
-const ts_morph_1 = require("ts-morph");
-const validator_1 = require("./validator");
-var ValidationRule;
+import { Project } from "ts-morph";
+export var ValidationRule;
 (function (ValidationRule) {
     ValidationRule["IsType"] = "IsType";
     ValidationRule["IsArray"] = "IsArray";
@@ -15,8 +11,8 @@ var ValidationRule;
     ValidationRule["Max"] = "Max";
     ValidationRule["Min"] = "Min";
     ValidationRule["Custom"] = "Custom";
-})(ValidationRule || (exports.ValidationRule = ValidationRule = {}));
-var BaseTypes;
+})(ValidationRule || (ValidationRule = {}));
+export var BaseTypes;
 (function (BaseTypes) {
     BaseTypes["String"] = "string";
     BaseTypes["Number"] = "number";
@@ -25,38 +21,12 @@ var BaseTypes;
     BaseTypes["Any"] = "any";
     BaseTypes["Unknown"] = "unknown";
     BaseTypes["Object"] = "object";
-})(BaseTypes || (exports.BaseTypes = BaseTypes = {}));
+})(BaseTypes || (BaseTypes = {}));
 const utilForMatching = [ValidationRule.MaxLength, ValidationRule.MinLength, ValidationRule.Contains, ValidationRule.Format, ValidationRule.Min, ValidationRule.Max, ValidationRule.Custom];
-class ValidatorFactory {
+export default class ValidatorFactory {
     constructor() {
         this.currentParsedFile = '';
         this.currentParsedClass = '';
-    }
-    testCreateValidator() {
-        const validator = new validator_1.Validator();
-        const project = new ts_morph_1.Project();
-        const sourceFiles = project.addSourceFilesAtPaths(`./routes/test.ts`);
-        sourceFiles.forEach((sourceFile) => {
-            this.currentParsedFile = sourceFile.getFilePath();
-            const classes = sourceFile.getClasses();
-            classes.forEach((classDef) => {
-                classDef.getImplements().forEach((impl) => {
-                    const requiresValidation = impl.getText().toLowerCase() === 'requiresvalidation';
-                    if (requiresValidation) {
-                        const methods = classDef.getMethods();
-                        methods.forEach((method) => {
-                            const validationRules = [];
-                            method.getParameters().forEach((param) => {
-                                this.currentParsedClass = classDef.getName();
-                                validationRules.push(this.parseParameter(param, project.getTypeChecker()));
-                            });
-                            validator.addSchema(classDef.getName(), method.getName(), validationRules);
-                        });
-                    }
-                });
-            });
-        });
-        return validator;
     }
     parseParameter(param, typeChecker) {
         let isOptional = this.isOptional(param.getName(), param.getText());
@@ -69,7 +39,7 @@ class ValidatorFactory {
         };
     }
     getEnumValues(filPath, enumName) {
-        const project = new ts_morph_1.Project();
+        const project = new Project();
         let sourceFiles = project.addSourceFilesAtPaths(filPath + ".ts");
         if (sourceFiles.length == 0) {
             sourceFiles = project.addSourceFilesAtPaths(filPath + ".tsx");
@@ -171,7 +141,7 @@ class ValidatorFactory {
     }
     parseObject(filPath, objectName) {
         const validationRules = [];
-        const project = new ts_morph_1.Project();
+        const project = new Project();
         let sourceFiles = project.addSourceFilesAtPaths(filPath + ".ts");
         if (sourceFiles.length == 0) {
             sourceFiles = project.addSourceFilesAtPaths(filPath + ".tsx");
@@ -274,5 +244,4 @@ class ValidatorFactory {
         return regex.test(input);
     }
 }
-exports.default = ValidatorFactory;
 //# sourceMappingURL=builder.js.map

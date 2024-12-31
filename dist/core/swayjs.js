@@ -1,34 +1,32 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const http_1 = require("http");
-const https_1 = require("https");
-const find_my_way_1 = require("find-my-way");
-const builder_1 = require("./builder");
-const logger_1 = require("./logger");
-const types_1 = require("./types");
-const context_1 = require("./context");
-const cors_1 = require("./cors");
-const validator_1 = require("./validator/validator");
-const exceptions_1 = require("./exceptions");
-class SwayJs {
-    static async createServer(config, logManager) {
-        const instance = new SwayJs(config, logManager);
-        await instance.initRouters();
-        return instance;
+import http from 'http';
+import https from 'https';
+import FindMyWay from 'find-my-way';
+import Builder from './builder';
+import Logger from './logger';
+import { RestMethod } from './types';
+import { AppContext, RequestContext } from './context';
+import CorsManager from './cors';
+import { Validator } from './validator/validator';
+import { InternalServerErrorException, UnprocessableEntityException } from './exceptions';
+export default class SwayJs {
+    static async CreateServer(config, logManager) {
+        const server = new SwayJs(config, logManager);
+        await server.initRouters();
+        return server;
     }
     constructor(config, logManager) {
         this.middlewares = [];
-        this.appContext = new context_1.AppContext();
+        this.appContext = new AppContext();
         this.configuration = config;
         if (!this.configuration.noCorsMode) {
             this.configuration.noCorsMode = false;
         }
-        this.logManager = new logger_1.default(logManager);
-        this.corsManager = new cors_1.default(config.corsOptions);
-        this.requestValidator = new validator_1.Validator();
+        this.logManager = new Logger(logManager);
+        this.corsManager = new CorsManager(config.corsOptions);
+        this.requestValidator = new Validator();
     }
     async initRouters() {
-        const r = (0, find_my_way_1.default)({
+        const r = FindMyWay({
             ignoreTrailingSlash: true,
             ignoreDuplicateSlashes: true,
             defaultRoute: (req, res) => {
@@ -37,9 +35,9 @@ class SwayJs {
                 res.end();
             }
         });
-        const builder = new builder_1.default(this.logManager, this.configuration.routesFolder);
+        const builder = new Builder(this.logManager, this.configuration.routesFolder);
         for (const routeInfo of builder.routes) {
-            const routeClassType = await Promise.resolve(`${routeInfo.filePath}`).then(s => require(s));
+            const routeClassType = await import(routeInfo.filePath);
             let routeClassImported;
             if (routeClassType.default) {
                 routeClassImported = routeClassType.default;
@@ -66,7 +64,7 @@ class SwayJs {
         let body;
         if (method.aspectsParams) {
             let validationErrors = [];
-            if (method.restMethod == types_1.RestMethod.GET || method.restMethod == types_1.RestMethod.DELETE) {
+            if (method.restMethod == RestMethod.GET || method.restMethod == RestMethod.DELETE) {
                 skipValidation = routeClass['skipGetInputValidation'];
                 if (!skipValidation) {
                     skipValidation = routeClass['skipDeleteInputValidation'];
@@ -77,14 +75,14 @@ class SwayJs {
                     }
                     catch (e) {
                         this.logManager.error('Cannot parse body', e);
-                        new exceptions_1.UnprocessableEntityException('Cannot parse query params').send(res);
+                        new UnprocessableEntityException('Cannot parse query params').send(res);
                     }
                 }
                 else {
                     body = searchParams;
                 }
             }
-            else if (method.restMethod == types_1.RestMethod.POST || method.restMethod == types_1.RestMethod.PUT) {
+            else if (method.restMethod == RestMethod.POST || method.restMethod == RestMethod.PUT) {
                 skipValidation = routeClass['skipPostInputValidation'];
                 if (!skipValidation) {
                     skipValidation = routeClass['skipPutInputValidation'];
@@ -94,7 +92,7 @@ class SwayJs {
                 }
                 catch (e) {
                     this.logManager.error('Cannot parse body', e);
-                    new exceptions_1.UnprocessableEntityException('Cannot parse body').send(res);
+                    new UnprocessableEntityException('Cannot parse body').send(res);
                 }
             }
             if (body) {
@@ -103,7 +101,7 @@ class SwayJs {
                 }
                 if (validationErrors.length > 0 && !skipValidation) {
                     this.logManager.error('Validation errors:\n' + validationErrors.join('\n'));
-                    new exceptions_1.UnprocessableEntityException('Validation errors:\n' + validationErrors.join('\n')).send(res);
+                    new UnprocessableEntityException('Validation errors:\n' + validationErrors.join('\n')).send(res);
                 }
                 else {
                     let result;
@@ -112,7 +110,7 @@ class SwayJs {
                     }
                     catch (err) {
                         console.log(err);
-                        new exceptions_1.InternalServerErrorException(err.message).send(res);
+                        new InternalServerErrorException(err.message).send(res);
                     }
                     if (result) {
                         res.end(JSON.stringify(result));
@@ -147,12 +145,12 @@ class SwayJs {
     }
     async run() {
         if (this.configuration.key && this.configuration.cert) {
-            this.server = https_1.default.createServer((req, res) => {
+            this.server = https.createServer((req, res) => {
                 this.handleRequest(req, res);
             });
         }
         else {
-            this.server = http_1.default.createServer((req, res) => {
+            this.server = http.createServer((req, res) => {
                 this.handleRequest(req, res);
             });
         }
@@ -165,7 +163,7 @@ class SwayJs {
     async handleRequest(req, res) {
         let continueProcess = true;
         const method = req.method && req.method.toUpperCase && req.method.toUpperCase();
-        if (method === types_1.RestMethod.OPTIONS && req.url) {
+        if (method === RestMethod.OPTIONS && req.url) {
             const handle = this.router.find(method, req.url);
             if (handle) {
                 continueProcess = false;
@@ -175,7 +173,7 @@ class SwayJs {
         if (continueProcess && !this.configuration.noCorsMode) {
             continueProcess = this.corsManager.handleRequest(req, res);
         }
-        let requestContext = new context_1.RequestContext(req, res);
+        let requestContext = new RequestContext(req, res);
         if (continueProcess) {
             for (const fn of this.middlewares) {
                 try {
@@ -186,7 +184,7 @@ class SwayJs {
                 }
                 catch (err) {
                     continueProcess = false;
-                    new exceptions_1.InternalServerErrorException(err.message).send(res);
+                    new InternalServerErrorException(err.message).send(res);
                 }
             }
         }
@@ -195,5 +193,4 @@ class SwayJs {
         }
     }
 }
-exports.default = SwayJs;
 //# sourceMappingURL=swayjs.js.map

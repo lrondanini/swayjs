@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Observer = void 0;
-class Observer {
+export class Observer {
     constructor() {
         this.eventMap = {};
     }
@@ -21,5 +18,4 @@ class Observer {
         this.eventMap[event].delete(callback);
     }
 }
-exports.Observer = Observer;
 //# sourceMappingURL=observer.js.map

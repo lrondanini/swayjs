@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RequestContext = exports.AppContext = void 0;
-class AppContext {
+export class AppContext {
     constructor() {
         this.props = {};
     }
@@ -15,8 +12,7 @@ class AppContext {
         return this.props[name];
     }
 }
-exports.AppContext = AppContext;
-class RequestContext {
+export class RequestContext {
     constructor(req, res) {
         this.req = req;
         this.res = res;
@@ -38,5 +34,4 @@ class RequestContext {
         return this.props[name];
     }
 }
-exports.RequestContext = RequestContext;
 //# sourceMappingURL=context.js.map

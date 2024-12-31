@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PreconditionFailedException = exports.GatewayTimeoutException = exports.ImATeapotException = exports.NotImplementedException = exports.InternalServerErrorException = exports.PayloadTooLargeException = exports.HttpVersionNotSupportedException = exports.UnprocessableEntityException = exports.UnsupportedMediaTypeException = exports.GoneException = exports.ConflictException = exports.ServiceUnavailableException = exports.BadGatewayException = exports.RequestTimeoutException = exports.NotAcceptableException = exports.MethodNotAllowedException = exports.NotFoundException = exports.ForbiddenException = exports.UnauthorizedException = exports.BadRequestException = void 0;
 var ErrorType;
 (function (ErrorType) {
     ErrorType["HttpVersionNotSupported"] = "HttpVersionNotSupported";
@@ -60,124 +57,104 @@ class HttpException {
         res.end(JSON.stringify({ error: this.message, description: this.description }));
     }
 }
-class BadRequestException extends HttpException {
+export class BadRequestException extends HttpException {
     constructor(message, description) {
         super(ErrorType.BadRequest, message, description);
     }
 }
-exports.BadRequestException = BadRequestException;
-class UnauthorizedException extends HttpException {
+export class UnauthorizedException extends HttpException {
     constructor(message, description) {
         super(ErrorType.Unauthorized, message, description);
     }
 }
-exports.UnauthorizedException = UnauthorizedException;
-class ForbiddenException extends HttpException {
+export class ForbiddenException extends HttpException {
     constructor(message, description) {
         super(ErrorType.Forbidden, message, description);
     }
 }
-exports.ForbiddenException = ForbiddenException;
-class NotFoundException extends HttpException {
+export class NotFoundException extends HttpException {
     constructor(message, description) {
         super(ErrorType.NotFound, message, description);
     }
 }
-exports.NotFoundException = NotFoundException;
-class MethodNotAllowedException extends HttpException {
+export class MethodNotAllowedException extends HttpException {
     constructor(message, description) {
         super(ErrorType.MethodNotAllowed, message, description);
     }
 }
-exports.MethodNotAllowedException = MethodNotAllowedException;
-class NotAcceptableException extends HttpException {
+export class NotAcceptableException extends HttpException {
     constructor(message, description) {
         super(ErrorType.NotAcceptable, message, description);
     }
 }
-exports.NotAcceptableException = NotAcceptableException;
-class RequestTimeoutException extends HttpException {
+export class RequestTimeoutException extends HttpException {
     constructor(message, description) {
         super(ErrorType.RequestTimeout, message, description);
     }
 }
-exports.RequestTimeoutException = RequestTimeoutException;
-class BadGatewayException extends HttpException {
+export class BadGatewayException extends HttpException {
     constructor(message, description) {
         super(ErrorType.BadGateway, message, description);
     }
 }
-exports.BadGatewayException = BadGatewayException;
-class ServiceUnavailableException extends HttpException {
+export class ServiceUnavailableException extends HttpException {
     constructor(message, description) {
         super(ErrorType.ServiceUnavailable, message, description);
     }
 }
-exports.ServiceUnavailableException = ServiceUnavailableException;
-class ConflictException extends HttpException {
+export class ConflictException extends HttpException {
     constructor(message, description) {
         super(ErrorType.Conflict, message, description);
     }
 }
-exports.ConflictException = ConflictException;
-class GoneException extends HttpException {
+export class GoneException extends HttpException {
     constructor(message, description) {
         super(ErrorType.Gone, message, description);
     }
 }
-exports.GoneException = GoneException;
-class UnsupportedMediaTypeException extends HttpException {
+export class UnsupportedMediaTypeException extends HttpException {
     constructor(message, description) {
         super(ErrorType.UnsupportedMediaType, message, description);
     }
 }
-exports.UnsupportedMediaTypeException = UnsupportedMediaTypeException;
-class UnprocessableEntityException extends HttpException {
+export class UnprocessableEntityException extends HttpException {
     constructor(message, description) {
         super(ErrorType.UnprocessableEntity, message, description);
     }
 }
-exports.UnprocessableEntityException = UnprocessableEntityException;
-class HttpVersionNotSupportedException extends HttpException {
+export class HttpVersionNotSupportedException extends HttpException {
     constructor(message, description) {
         super(ErrorType.HttpVersionNotSupported, message, description);
     }
 }
-exports.HttpVersionNotSupportedException = HttpVersionNotSupportedException;
-class PayloadTooLargeException extends HttpException {
+export class PayloadTooLargeException extends HttpException {
     constructor(message, description) {
         super(ErrorType.PayloadTooLarge, message, description);
     }
 }
-exports.PayloadTooLargeException = PayloadTooLargeException;
-class InternalServerErrorException extends HttpException {
+export class InternalServerErrorException extends HttpException {
     constructor(message, description) {
         super(ErrorType.InternalServerError, message, description);
     }
 }
-exports.InternalServerErrorException = InternalServerErrorException;
-class NotImplementedException extends HttpException {
+export class NotImplementedException extends HttpException {
     constructor(message, description) {
         super(ErrorType.NotImplemented, message, description);
     }
 }
-exports.NotImplementedException = NotImplementedException;
-class ImATeapotException extends HttpException {
+export class ImATeapotException extends HttpException {
     constructor(message, description) {
         super(ErrorType.ImATeapot, message, description);
     }
 }
-exports.ImATeapotException = ImATeapotException;
-class GatewayTimeoutException extends HttpException {
+export class GatewayTimeoutException extends HttpException {
     constructor(message, description) {
         super(ErrorType.GatewayTimeout, message, description);
     }
 }
-exports.GatewayTimeoutException = GatewayTimeoutException;
-class PreconditionFailedException extends HttpException {
+export class PreconditionFailedException extends HttpException {
     constructor(message, description) {
         super(ErrorType.PreconditionFailed, message, description);
     }
 }
-exports.PreconditionFailedException = PreconditionFailedException;
 //# sourceMappingURL=exceptions.js.map

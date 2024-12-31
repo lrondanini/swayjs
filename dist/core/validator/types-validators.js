@@ -1,21 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateIsType = validateIsType;
-exports.validateMin = validateMin;
-exports.validateMax = validateMax;
-exports.validateMaxLength = validateMaxLength;
-exports.validateMinLength = validateMinLength;
-exports.validateContains = validateContains;
-exports.validateFormat = validateFormat;
-const builder_1 = require("./builder");
-function validateIsType(value, rule) {
-    if (rule.type == builder_1.BaseTypes.Enum) {
+import { BaseTypes } from "./builder";
+export function validateIsType(value, rule) {
+    if (rule.type == BaseTypes.Enum) {
         const options = rule.value;
         if (options.indexOf(value) > -1) {
             return true;
         }
     }
-    else if (rule.type == builder_1.BaseTypes.Any || rule.type == builder_1.BaseTypes.Unknown) {
+    else if (rule.type == BaseTypes.Any || rule.type == BaseTypes.Unknown) {
         return true;
     }
     else if (typeof value === rule.type) {
@@ -23,7 +14,7 @@ function validateIsType(value, rule) {
     }
     return false;
 }
-function validateMin(value, rule) {
+export function validateMin(value, rule) {
     if (typeof rule.value === 'number' && typeof value === 'number') {
         if (value >= rule.value) {
             return true;
@@ -31,7 +22,7 @@ function validateMin(value, rule) {
     }
     return false;
 }
-function validateMax(value, rule) {
+export function validateMax(value, rule) {
     if (typeof rule.value === 'number' && typeof value === 'number') {
         if (value <= rule.value) {
             return true;
@@ -39,7 +30,7 @@ function validateMax(value, rule) {
     }
     return false;
 }
-function validateMaxLength(value, rule) {
+export function validateMaxLength(value, rule) {
     if (typeof rule.value === 'number') {
         if (Array.isArray(value)) {
             if (value.length <= rule.value) {
@@ -54,7 +45,7 @@ function validateMaxLength(value, rule) {
     }
     return false;
 }
-function validateMinLength(value, rule) {
+export function validateMinLength(value, rule) {
     if (typeof rule.value === 'number') {
         if (Array.isArray(value)) {
             if (value.length >= rule.value) {
@@ -69,7 +60,7 @@ function validateMinLength(value, rule) {
     }
     return false;
 }
-function validateContains(value, rule) {
+export function validateContains(value, rule) {
     if (Array.isArray(value)) {
         if (value.indexOf(rule.value) > -1) {
             return true;
@@ -82,7 +73,7 @@ function validateContains(value, rule) {
     }
     return false;
 }
-function validateFormat(value, rule) {
+export function validateFormat(value, rule) {
     switch (String(rule.value).toLowerCase()) {
         case "url": {
             const regex = new RegExp(/^(?:https?|ftp):\/\/(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u{00a1}-\u{ffff}]+-)*[a-z0-9\u{00a1}-\u{ffff}]+)(?:\.(?:[a-z0-9\u{00a1}-\u{ffff}]+-)*[a-z0-9\u{00a1}-\u{ffff}]+)*(?:\.(?:[a-z\u{00a1}-\u{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/iu);

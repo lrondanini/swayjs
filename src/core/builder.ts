@@ -50,6 +50,9 @@ export default class Builder {
     const project = new Project();
     const sourceFiles = project.addSourceFilesAtPaths(`${routesDirectory}/**/*.ts`);
 
+
+    // console.log(sourceFiles);
+
     if (sourceFiles.length == 0) {
       throw new Error(`No .ts file found in ${routesDirectory}`);
     }
@@ -57,13 +60,13 @@ export default class Builder {
     const parsedRoutes: string[] = [];
 
     sourceFiles.forEach((sourceFile) => {
-      //console.log(sourceFile.getFilePath());
+      // console.log(sourceFile.getFilePath());
       const classes = sourceFile.getClasses();
       classes.forEach((classDef) => {
         classDef.getImplements().forEach((impl) => {
           const typeInfo = impl.getType().getText();
-          // console.log(typeInfo);
-          if (typeInfo.toLowerCase().includes('swayjs')) {
+          // console.log(classDef.getName(), typeInfo);
+          if (typeInfo.toLowerCase().includes('swayjs')) {            
             const info = typeInfo.split(".");
             if (info[1].toLowerCase() === 'route') {
               let methodsInfos: MethodInfo[] = [];
@@ -96,6 +99,8 @@ export default class Builder {
                   skip = true;
                 }
 
+                // console.log(skip, method.getName(), method.getText());
+
                 if (!skip) {
                   let i = 0; //skip first parameter (it's always the request context - RequestContext)
                   const vFactory = new ValidatorFactory()
@@ -109,7 +114,8 @@ export default class Builder {
                     } else if (i == 2) {
                       //route params
                       methodInfo.aspectsRouteParams = true;
-                      methodInfo.routeParamsValidationRules = vFactory.parseParameter(param, project.getTypeChecker());
+                      //we do not validate route params, also the type of RouteParams is internal to swayjs framework
+                      // methodInfo.routeParamsValidationRules = vFactory.parseParameter(param, project.getTypeChecker());
                     }
                     i++;
                   });

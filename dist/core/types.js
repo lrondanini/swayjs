@@ -1,15 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Context = exports.RestMethod = void 0;
-var RestMethod;
+export var RestMethod;
 (function (RestMethod) {
     RestMethod["GET"] = "GET";
     RestMethod["POST"] = "POST";
     RestMethod["PUT"] = "PUT";
     RestMethod["DELETE"] = "DELETE";
     RestMethod["OPTIONS"] = "OPTIONS";
-})(RestMethod || (exports.RestMethod = RestMethod = {}));
-class Context {
+})(RestMethod || (RestMethod = {}));
+export class Context {
     constructor() {
         this.props = {};
     }
@@ -23,5 +20,4 @@ class Context {
         return this.props[name];
     }
 }
-exports.Context = Context;
 //# sourceMappingURL=types.js.map

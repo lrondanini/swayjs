@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const vary_1 = require("vary");
-class CorsManager {
+import vary from 'vary';
+export default class CorsManager {
     constructor(options) {
         if (options) {
             this.options = options;
@@ -85,7 +83,7 @@ class CorsManager {
                     this.applyHeaders(header, res);
                 }
                 else if (header.key === 'Vary' && header.value) {
-                    (0, vary_1.default)(res, header.value);
+                    vary(res, header.value);
                 }
                 else if (header.value) {
                     res.setHeader(header.key, header.value);
@@ -180,5 +178,4 @@ class CorsManager {
         return true;
     }
 }
-exports.default = CorsManager;
 //# sourceMappingURL=cors.js.map

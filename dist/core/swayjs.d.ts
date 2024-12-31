@@ -21,7 +21,7 @@ export default class SwayJs {
     private corsManager;
     private requestValidator;
     private appContext;
-    static createServer(config: SwayJsConfiguration, logManager?: ILogger): Promise<SwayJs>;
+    static CreateServer(config: SwayJsConfiguration, logManager?: ILogger): Promise<SwayJs>;
     constructor(config: SwayJsConfiguration, logManager?: ILogger);
     private initRouters;
     private handleRoute;

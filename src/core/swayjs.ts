@@ -1,14 +1,13 @@
 import http, { IncomingMessage, ServerResponse } from 'http';
 import https from 'https';
 import FindMyWay, { HTTPVersion } from 'find-my-way';
-import qs from 'querystring';
-import Builder, { MethodInfo, RouteInfo } from './builder';
+import Builder, { MethodInfo } from './builder';
 import Logger, { ILogger } from './logger';
 import { RestMethod } from './types';
 import { AppContext, RequestContext } from './context';
 import CorsManager, { CorsOptions } from './cors';
 import { ValidationFunction, Validator } from './validator/validator';
-import { BadRequestException, InternalServerErrorException, UnprocessableEntityException } from './exceptions';
+import { InternalServerErrorException, UnprocessableEntityException } from './exceptions';
 
 
 export interface SwayJsConfiguration {

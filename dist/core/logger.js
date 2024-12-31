@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-class Logger {
+export default class Logger {
     constructor(logManager) {
         this.logManager = logManager;
     }
@@ -53,5 +51,4 @@ class Logger {
         }
     }
 }
-exports.default = Logger;
 //# sourceMappingURL=logger.js.map

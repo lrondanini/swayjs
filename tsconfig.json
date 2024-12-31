@@ -4,10 +4,9 @@
     "node_modules"
   ],
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ES2020",
     "declaration": true,
     "removeComments": true,
-    "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
@@ -22,6 +21,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "moduleResolution": "node",
   },
 }
