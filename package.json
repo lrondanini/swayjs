@@ -1,8 +1,18 @@
 {
   "name": "swayjs",
+  "author": "Luca Rondanini",
+  "license": "ISC",
+  "private": false,
   "version": "0.0.2",
   "description": "The best web framework for Node.js",
-  "main": "src/index.ts",
+  "homepage": "https://github.com/lrondanini/swayjs#readme",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "keywords": [
     "web",
     "framework",
@@ -10,19 +20,16 @@
     "http",
     "router"
   ],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lrondanini/swayjs.git"
   },
-  "author": "Luca Rondanini",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/lrondanini/swayjs/issues"
   },
-  "homepage": "https://github.com/lrondanini/swayjs#readme",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "find-my-way": "^9.1.0",
     "typescript": "^5.6.3",
