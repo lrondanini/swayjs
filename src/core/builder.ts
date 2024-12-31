@@ -30,7 +30,7 @@ export default class Builder {
   private logManager: Logger;
   routes: RouteInfo[];
 
-  constructor(routesFolder: string, logManager: Logger) {
+  constructor(logManager: Logger, routesFolder?: string) {
     this.logManager = logManager;
 
     const root = process.cwd();
@@ -42,7 +42,7 @@ export default class Builder {
     if (fs.existsSync(routesDirectory)) {
       this.parseRoutes(routesDirectory);
     } else {
-      throw new Error('Cannot find routes directory');
+      throw new Error('Cannot find routes directory in ' + routesDirectory);
     }
   }
 
@@ -50,16 +50,19 @@ export default class Builder {
     const project = new Project();
     const sourceFiles = project.addSourceFilesAtPaths(`${routesDirectory}/**/*.ts`);
 
+    if (sourceFiles.length == 0) {
+      throw new Error(`No .ts file found in ${routesDirectory}`);
+    }
     const routesInfos: RouteInfo[] = [];
     const parsedRoutes: string[] = [];
 
-    
     sourceFiles.forEach((sourceFile) => {
-      // console.log(sourceFile.getFilePath());
+      //console.log(sourceFile.getFilePath());
       const classes = sourceFile.getClasses();
       classes.forEach((classDef) => {
         classDef.getImplements().forEach((impl) => {
           const typeInfo = impl.getType().getText();
+          // console.log(typeInfo);
           if (typeInfo.toLowerCase().includes('swayjs')) {
             const info = typeInfo.split(".");
             if (info[1].toLowerCase() === 'route') {
@@ -139,7 +142,7 @@ export default class Builder {
               routesInfos.push({
                 filePath: sourceFile.getFilePath(),
                 route: route,
-                className: classDef.getName(),
+                className: classDef.getName() || '',
                 methods: methodsInfos
               })
             }

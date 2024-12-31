@@ -158,7 +158,7 @@ export class Validator {
   private parseQueryString_Object(json: any, rule: ValidationRuleSetting): any {
     let parsedValue = json;
 
-    const rules = rule.rules;
+    const rules: any = rule.rules;
     for (let k = 0; k < rules.length; k++) {
       const p = rules[k];
       let value: any = json[p.propName];    
@@ -178,13 +178,13 @@ export class Validator {
     const exptectedType = rule.type;
     if (Array.isArray(value)) {
       if (exptectedType === BaseTypes.Object) {
-        let tmp = [];
+        let tmp: any[] = [];
         for (var i = 0; i < value.length; i++) {
           tmp.push(this.parseQueryString_Object(value[i], rule));
         }
         parsedValue = tmp;
       } else {
-        let tmp = [];
+        let tmp: any[] = [];
         for (var i = 0; i < value.length; i++) {
           tmp.push(this.parseValue(value[i], rule));          
         }
@@ -235,7 +235,7 @@ export class Validator {
     let orErrors: string[] = [];
     for (let j = 0; j < p.rules.or.length; j++) {
       const orR = p.rules.or[j];
-      let tmpErrors = [];
+      let tmpErrors: any[] = [];
       for (const r of orR) {
         const key = r.key;
         if (validationCache[key]) {
@@ -282,7 +282,7 @@ export class Validator {
   }
 
   private validateObject(json: any, rule: ValidationRuleSetting, errors: string[]): boolean {
-    const rules = rule.rules;
+    const rules: any = rule.rules;
     let err: string[] = [];
     for (let k = 0; k < rules.length; k++) {
       const p = rules[k];

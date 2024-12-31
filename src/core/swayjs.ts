@@ -5,7 +5,7 @@ import qs from 'querystring';
 import Builder, { MethodInfo, RouteInfo } from './builder';
 import Logger, { ILogger } from './logger';
 import { RestMethod } from './types';
-import { Context } from './context';
+import { AppContext, RequestContext } from './context';
 import CorsManager, { CorsOptions } from './cors';
 import { ValidationFunction, Validator } from './validator/validator';
 import { BadRequestException, InternalServerErrorException, UnprocessableEntityException } from './exceptions';
@@ -20,7 +20,7 @@ export interface SwayJsConfiguration {
   noCorsMode?: boolean;
 }
 
-export type MiddlewareFunction = (req: IncomingMessage, res: ServerResponse, reqContext?: Context) =>  Context | undefined | Promise<Context | undefined>;
+export type MiddlewareFunction = (req: IncomingMessage, res: ServerResponse, reqContext?: RequestContext) => RequestContext | undefined | Promise<RequestContext | undefined>;
 
 export default class SwayJs {
   private server: http.Server | https.Server;
@@ -30,7 +30,13 @@ export default class SwayJs {
   private router: FindMyWay.Instance<HTTPVersion>;
   private corsManager: CorsManager;
   private requestValidator: Validator;
-  private appContext: Context = new Context();
+  private appContext: AppContext = new AppContext();
+
+  static async CreateServer(config: SwayJsConfiguration, logManager?: ILogger): Promise<SwayJs> {
+    const server = new SwayJs(config, logManager);
+    await server.initRouters();
+    return server;
+  }
 
   constructor(config: SwayJsConfiguration, logManager?: ILogger) {
     this.configuration = config;
@@ -39,8 +45,7 @@ export default class SwayJs {
     }
     this.logManager = new Logger(logManager);
     this.corsManager = new CorsManager(config.corsOptions);
-    this.requestValidator = new Validator();
-    this.initRouters();
+    this.requestValidator = new Validator();    
   }
 
   private async initRouters() {
@@ -61,7 +66,7 @@ export default class SwayJs {
     //   querystringParser: str => qs.parse(str)
     // })
 
-    const builder = new Builder(this.configuration.routesFolder, this.logManager);
+    const builder = new Builder(this.logManager, this.configuration.routesFolder);
    
 
     for (const routeInfo of builder.routes) {
@@ -84,18 +89,16 @@ export default class SwayJs {
       const routeClass = new routeClassImported(this.appContext);
       const _self = this;
       for (const method of routeInfo.methods) {
-        r.on(method.restMethod, routeInfo.route, async function (req: IncomingMessage, res: ServerResponse, params, store, searchParams) {
+        r.on(method.restMethod, routeInfo.route, async function (req: any, res: any, params: any, store: any, searchParams: any) {
           _self.handleRoute(req, res, params, searchParams, method, routeClass, this); //requestContext = this is set as 3rd parameter of lookup
         });
       }
     }
 
     this.router = r;
-
-    // console.log(this.router.prettyPrint());
   }
 
-  private async handleRoute(req: IncomingMessage, res: ServerResponse, params,  searchParams, method: MethodInfo, routeClass: any, requestContext:Context) {
+  private async handleRoute(req: IncomingMessage, res: ServerResponse, params, searchParams, method: MethodInfo, routeClass: any, requestContext: RequestContext) {
     
     let skipValidation = false;
 
@@ -111,13 +114,17 @@ export default class SwayJs {
           skipValidation = routeClass['skipDeleteInputValidation'];
         }
         
-        //searchParams is already an object   
-        try {
-          body = this.requestValidator.parseQueryString(method.validationRules, searchParams);
-        } catch (e) {
-          this.logManager.error('Cannot parse body', e);
-          new UnprocessableEntityException('Cannot parse query params').send(res);
-        }  
+        if (method.validationRules) {
+          //searchParams is already an object   
+          try {
+            body = this.requestValidator.parseQueryString(method.validationRules, searchParams);
+          } catch (e) {
+            this.logManager.error('Cannot parse body', e);
+            new UnprocessableEntityException('Cannot parse query params').send(res);
+          }  
+        } else {
+          body = searchParams;
+        }
       } else if (method.restMethod == RestMethod.POST || method.restMethod == RestMethod.PUT) {
         skipValidation = routeClass['skipPostInputValidation'];
         if(!skipValidation) {
@@ -132,7 +139,7 @@ export default class SwayJs {
       }
 
       if (body) {
-        if(!skipValidation) {
+        if (!skipValidation && method.validationRules) {
           validationErrors = this.requestValidator.validate(method.validationRules, body);
         }
 
@@ -160,7 +167,7 @@ export default class SwayJs {
 
   private getBody(request: IncomingMessage): any {
     return new Promise((resolve) => {
-      const bodyParts = [];
+      const bodyParts: any[] = [];
       let body;
       request.on('data', (chunk) => {
         bodyParts.push(chunk);
@@ -177,6 +184,10 @@ export default class SwayJs {
 
   addToAppContext(key: string, value: any) {
     this.appContext.add(key, value);
+  }
+
+  getRouterMap(): string {
+    return this.router.prettyPrint();
   }
 
   async run() {
@@ -202,7 +213,7 @@ export default class SwayJs {
     let continueProcess = true;
     const method = req.method && req.method.toUpperCase && req.method.toUpperCase();
 
-    if (method === RestMethod.OPTIONS) {
+    if (method === RestMethod.OPTIONS && req.url) {
       const handle = this.router.find(method, req.url);
       if (handle) {
         continueProcess = false;
@@ -215,7 +226,7 @@ export default class SwayJs {
       continueProcess = this.corsManager.handleRequest(req, res);
     }
 
-    let requestContext = new Context();
+    let requestContext = new RequestContext(req, res);
 
     if (continueProcess) {
       for (const fn of this.middlewares) {

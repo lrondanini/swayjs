@@ -37,6 +37,11 @@ export interface CorsOptions {
   optionsSuccessStatus?: number | undefined;
 }
 
+export type Header = {
+  key: string;
+  value: string;
+}
+
 export default class CorsManager {
   options: CorsOptions;
   constructor(options?: CorsOptions) {
@@ -86,7 +91,7 @@ export default class CorsManager {
 
   private configureOrigin(req) {
     var requestOrigin = req.headers.origin,
-      headers = [],
+      headers: Header[][] = [],
       isAllowed;
 
     if (!this.options.origin || this.options.origin === '*') {
@@ -157,7 +162,7 @@ export default class CorsManager {
 
   private configureAllowedHeaders(req) {
     var allowedHeaders = this.headerOptionToString(this.options.allowedHeaders);
-    var headers = [];
+    var headers: Header[][] = [];
 
     if (!allowedHeaders) {
       allowedHeaders = req.headers['access-control-request-headers']; // .headers wasn't specified, so reflect the request headers
@@ -203,7 +208,7 @@ export default class CorsManager {
 
 
   handleRequest(req: IncomingMessage, res: ServerResponse): boolean {
-    var headers = [];
+    var headers: any = [];
     const method = req.method && req.method.toUpperCase && req.method.toUpperCase();
 
     if (method === 'OPTIONS') {
@@ -221,7 +226,7 @@ export default class CorsManager {
       } else {
         // Safari (and potentially other browsers) need content-length 0,
         //   for 204 or they just hang waiting for a body
-        res.statusCode = this.options.optionsSuccessStatus;
+        res.statusCode = this.options.optionsSuccessStatus || 204;
         res.setHeader('Content-Length', '0');
         res.end();
         return false;
