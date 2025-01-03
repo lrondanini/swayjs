@@ -98,70 +98,83 @@ export default class SwayJs {
   }
 
   private async handleRoute(req: IncomingMessage, res: ServerResponse, params, searchParams, method: MethodInfo, routeClass: any, requestContext: RequestContext) {
-    
     let skipValidation = false;
+    let blockExecution = false;
+
+    if (routeClass['PrepareContext']) {
+      try {
+        requestContext = await routeClass['PrepareContext'](method.name, requestContext);
+      } catch (err) {
+        blockExecution = true;
+        console.log(err);
+        new InternalServerErrorException(err.message).send(res);
+      }
+    }
 
     let body: any;
 
-    if (method.aspectsParams) {
-      let validationErrors: string[] = [];
-      
+    if (!blockExecution) {
+      if (method.aspectsParams) {
+        let validationErrors: string[] = [];
 
-      if (method.restMethod == RestMethod.GET || method.restMethod == RestMethod.DELETE) {
-        skipValidation = routeClass['skipGetInputValidation'];
-        if(!skipValidation) {
-          skipValidation = routeClass['skipDeleteInputValidation'];
-        }
-        
-        if (method.validationRules) {
-          //searchParams is already an object   
+
+        if (method.restMethod == RestMethod.GET || method.restMethod == RestMethod.DELETE) {
+          skipValidation = routeClass['skipGetInputValidation'];
+          if (!skipValidation) {
+            skipValidation = routeClass['skipDeleteInputValidation'];
+          }
+
+          if (method.validationRules) {
+            //searchParams is already an object   
+            try {
+              body = this.requestValidator.parseQueryString(method.validationRules, searchParams);
+            } catch (e) {
+              this.logManager.error('Cannot parse body', e);
+              new UnprocessableEntityException('Cannot parse query params').send(res);
+            }
+          } else {
+            body = searchParams;
+          }
+        } else if (method.restMethod == RestMethod.POST || method.restMethod == RestMethod.PUT) {
+          skipValidation = routeClass['skipPostInputValidation'];
+          if (!skipValidation) {
+            skipValidation = routeClass['skipPutInputValidation'];
+          }
           try {
-            body = this.requestValidator.parseQueryString(method.validationRules, searchParams);
+            body = await this.getBody(req);
           } catch (e) {
             this.logManager.error('Cannot parse body', e);
-            new UnprocessableEntityException('Cannot parse query params').send(res);
-          }  
-        } else {
-          body = searchParams;
-        }
-      } else if (method.restMethod == RestMethod.POST || method.restMethod == RestMethod.PUT) {
-        skipValidation = routeClass['skipPostInputValidation'];
-        if(!skipValidation) {
-          skipValidation = routeClass['skipPutInputValidation'];
-        }
-        try {
-          body = await this.getBody(req);
-        } catch (e) {
-          this.logManager.error('Cannot parse body', e);
-          new UnprocessableEntityException('Cannot parse body').send(res);
-        }
-      }
-
-      if (body) {
-        if (!skipValidation && method.validationRules) {
-          validationErrors = this.requestValidator.validate(method.validationRules, body);
-        }
-
-        if (validationErrors.length > 0 && !skipValidation) {
-          this.logManager.error('Validation errors:\n' + validationErrors.join('\n'));
-          new UnprocessableEntityException('Validation errors:\n' + validationErrors.join('\n')).send(res);
-        } else {
-          let result: any;
-          try {
-            result = await routeClass[method.name](requestContext, body, params);
-          } catch (err) {
-            console.log(err);
-            new InternalServerErrorException(err.message).send(res);
-          }
-          if (result) {
-            res.end(JSON.stringify(result));
+            new UnprocessableEntityException('Cannot parse body').send(res);
           }
         }
-      }
 
-    } else {
-      res.end(JSON.stringify(await routeClass[method.name](requestContext)));
+        if (body) {
+          if (!skipValidation && method.validationRules) {
+            validationErrors = this.requestValidator.validate(method.validationRules, body);
+          }
+
+          if (validationErrors.length > 0 && !skipValidation) {
+            this.logManager.error('Validation errors:\n' + validationErrors.join('\n'));
+            new UnprocessableEntityException('Validation errors:\n' + validationErrors.join('\n')).send(res);
+          } else {
+            let result: any;
+            try {
+              result = await routeClass[method.name](requestContext, body, params);
+            } catch (err) {
+              console.log(err);
+              new InternalServerErrorException(err.message).send(res);
+            }
+            if (result) {
+              res.end(JSON.stringify(result));
+            }
+          }
+        }
+
+      } else {
+        res.end(JSON.stringify(await routeClass[method.name](requestContext)));
+      }
     }
+
   }
 
   private getBody(request: IncomingMessage): any {

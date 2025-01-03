@@ -1,4 +1,5 @@
 import { RequestContext } from "./context";
+import { RestMethod } from "./types";
 
 
 export type RouteParams = { [key: string]: string | undefined };
@@ -14,4 +15,5 @@ export interface Route {
   Post?(reqCtx: RequestContext, body?: any, routeParams?: RouteParams): void;
   Put?(reqCtx: RequestContext, body?: any, routeParams?: RouteParams): void;
   Delete?(reqCtx: RequestContext, body?: any, routeParams?: RouteParams): void;
+  PrepareContext?(restMethod: RestMethod, reqCtx: RequestContext): RequestContext;
 }
