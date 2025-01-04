@@ -57,7 +57,7 @@ export class Validator {
       errors = [...errors, ...this.validate(p, json)];
     }
 
-    console.log(errors);
+    // console.log(errors);
 
     return {
       passed: errors.length === 0 ? true : false,

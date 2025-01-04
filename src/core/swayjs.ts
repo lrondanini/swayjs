@@ -101,12 +101,12 @@ export default class SwayJs {
     let skipValidation = false;
     let blockExecution = false;
 
-    if (routeClass['PrepareContext']) {
+    if (routeClass['BeforeRequest']) {
       try {
-        requestContext = await routeClass['PrepareContext'](method.name, requestContext);
+        requestContext = await routeClass['BeforeRequest'](method.name, requestContext);
       } catch (err) {
         blockExecution = true;
-        console.log(err);
+        this.logManager.error(err);
         new InternalServerErrorException(err.message).send(res);
       }
     }
@@ -149,6 +149,10 @@ export default class SwayJs {
         }
 
         if (body) {
+          if (!skipValidation) {
+            skipValidation = routeClass['skipInputValidation']; //applies to all methods
+          }
+
           if (!skipValidation && method.validationRules) {
             validationErrors = this.requestValidator.validate(method.validationRules, body);
           }
@@ -161,7 +165,7 @@ export default class SwayJs {
             try {
               result = await routeClass[method.name](requestContext, body, params);
             } catch (err) {
-              console.log(err);
+              this.logManager.error(err);
               new InternalServerErrorException(err.message).send(res);
             }
             if (result) {
