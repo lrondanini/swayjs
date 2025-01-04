@@ -16,3 +16,15 @@ export default class Logger {
     debug(message: any, ...optionalParams: any[]): void;
     verbose(message: any, ...optionalParams: any[]): void;
 }
+export declare class RequestLogger {
+    private logManager;
+    private startTime;
+    private isError;
+    private errorNumber;
+    private errorType;
+    constructor(logManager?: ILogger);
+    setError(errorNumber: number, errorType: string): void;
+    private getExecTime;
+    private getDateTime;
+    log(req: any): void;
+}

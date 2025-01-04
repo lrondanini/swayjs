@@ -2,7 +2,7 @@ import http from 'http';
 import https from 'https';
 import FindMyWay from 'find-my-way';
 import Builder from './builder';
-import Logger from './logger';
+import Logger, { RequestLogger } from './logger';
 import { RestMethod } from './types';
 import { AppContext, RequestContext } from './context';
 import CorsManager from './cors';
@@ -30,9 +30,11 @@ export default class SwayJs {
             ignoreTrailingSlash: true,
             ignoreDuplicateSlashes: true,
             defaultRoute: (req, res) => {
-                this.logManager.error(req.url + ' not found');
+                const requestLogger = new RequestLogger(this.logManager);
+                requestLogger.setError(404, 'Not Found');
                 res.statusCode = 404;
                 res.end();
+                requestLogger.log(req);
             }
         });
         const builder = new Builder(this.logManager, this.configuration.routesFolder);
@@ -61,65 +63,99 @@ export default class SwayJs {
     }
     async handleRoute(req, res, params, searchParams, method, routeClass, requestContext) {
         let skipValidation = false;
+        let blockExecution = false;
+        const requestLogger = new RequestLogger(this.logManager);
+        if (routeClass['BeforeRequest']) {
+            try {
+                requestContext = await routeClass['BeforeRequest'](method.name, requestContext);
+            }
+            catch (err) {
+                blockExecution = true;
+                this.logManager.error(err);
+                const e = new InternalServerErrorException(err.message);
+                requestLogger.setError(e.getCode(), e.getTypeAsString());
+                e.send(res);
+                requestLogger.log(req);
+            }
+        }
         let body;
-        if (method.aspectsParams) {
-            let validationErrors = [];
-            if (method.restMethod == RestMethod.GET || method.restMethod == RestMethod.DELETE) {
-                skipValidation = routeClass['skipGetInputValidation'];
-                if (!skipValidation) {
-                    skipValidation = routeClass['skipDeleteInputValidation'];
+        if (!blockExecution) {
+            if (method.aspectsParams) {
+                let validationErrors = [];
+                if (method.restMethod == RestMethod.GET || method.restMethod == RestMethod.DELETE) {
+                    skipValidation = routeClass['skipGetInputValidation'];
+                    if (!skipValidation) {
+                        skipValidation = routeClass['skipDeleteInputValidation'];
+                    }
+                    if (method.validationRules) {
+                        try {
+                            body = this.requestValidator.parseQueryString(method.validationRules, searchParams);
+                        }
+                        catch (e) {
+                            this.logManager.error('Cannot parse body', e);
+                            const err = new UnprocessableEntityException('Cannot parse query params');
+                            requestLogger.setError(err.getCode(), err.getTypeAsString());
+                            err.send(res);
+                            requestLogger.log(req);
+                        }
+                    }
+                    else {
+                        body = searchParams;
+                    }
                 }
-                if (method.validationRules) {
+                else if (method.restMethod == RestMethod.POST || method.restMethod == RestMethod.PUT) {
+                    skipValidation = routeClass['skipPostInputValidation'];
+                    if (!skipValidation) {
+                        skipValidation = routeClass['skipPutInputValidation'];
+                    }
                     try {
-                        body = this.requestValidator.parseQueryString(method.validationRules, searchParams);
+                        body = await this.getBody(req);
                     }
                     catch (e) {
                         this.logManager.error('Cannot parse body', e);
-                        new UnprocessableEntityException('Cannot parse query params').send(res);
+                        const err = new UnprocessableEntityException('Cannot parse body');
+                        requestLogger.setError(err.getCode(), err.getTypeAsString());
+                        err.send(res);
+                        requestLogger.log(req);
                     }
                 }
-                else {
-                    body = searchParams;
-                }
-            }
-            else if (method.restMethod == RestMethod.POST || method.restMethod == RestMethod.PUT) {
-                skipValidation = routeClass['skipPostInputValidation'];
-                if (!skipValidation) {
-                    skipValidation = routeClass['skipPutInputValidation'];
-                }
-                try {
-                    body = await this.getBody(req);
-                }
-                catch (e) {
-                    this.logManager.error('Cannot parse body', e);
-                    new UnprocessableEntityException('Cannot parse body').send(res);
-                }
-            }
-            if (body) {
-                if (!skipValidation && method.validationRules) {
-                    validationErrors = this.requestValidator.validate(method.validationRules, body);
-                }
-                if (validationErrors.length > 0 && !skipValidation) {
-                    this.logManager.error('Validation errors:\n' + validationErrors.join('\n'));
-                    new UnprocessableEntityException('Validation errors:\n' + validationErrors.join('\n')).send(res);
-                }
-                else {
-                    let result;
-                    try {
-                        result = await routeClass[method.name](requestContext, body, params);
+                if (body) {
+                    if (!skipValidation) {
+                        skipValidation = routeClass['skipInputValidation'];
                     }
-                    catch (err) {
-                        console.log(err);
-                        new InternalServerErrorException(err.message).send(res);
+                    if (!skipValidation && method.validationRules) {
+                        validationErrors = this.requestValidator.validate(method.validationRules, body);
                     }
-                    if (result) {
-                        res.end(JSON.stringify(result));
+                    if (validationErrors.length > 0 && !skipValidation) {
+                        this.logManager.error('Validation errors:\n' + validationErrors.join('\n'));
+                        const err = new UnprocessableEntityException('Validation errors:\n' + validationErrors.join('\n'));
+                        requestLogger.setError(err.getCode(), err.getTypeAsString());
+                        err.send(res);
+                        requestLogger.log(req);
+                    }
+                    else {
+                        let result;
+                        try {
+                            result = await routeClass[method.name](requestContext, body, params);
+                        }
+                        catch (e) {
+                            result = undefined;
+                            this.logManager.error(e);
+                            const err = new InternalServerErrorException(e.message);
+                            requestLogger.setError(err.getCode(), err.getTypeAsString());
+                            err.send(res);
+                            requestLogger.log(req);
+                        }
+                        if (result) {
+                            res.end(JSON.stringify(result));
+                            requestLogger.log(req);
+                        }
                     }
                 }
             }
-        }
-        else {
-            res.end(JSON.stringify(await routeClass[method.name](requestContext)));
+            else {
+                res.end(JSON.stringify(await routeClass[method.name](requestContext)));
+            }
         }
     }
     getBody(request) {

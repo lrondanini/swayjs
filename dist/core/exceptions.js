@@ -26,9 +26,9 @@ class HttpException {
         this.errorType = et;
         this.message = message;
         this.description = description;
-        this.errorCode = this.findCode();
+        this.errorCode = this.getCode();
     }
-    findCode() {
+    getCode() {
         switch (this.errorType) {
             case ErrorType.BadRequest: return 400;
             case ErrorType.Unauthorized: return 401;
@@ -51,6 +51,9 @@ class HttpException {
             case ErrorType.GatewayTimeout: return 504;
             case ErrorType.HttpVersionNotSupported: return 505;
         }
+    }
+    getTypeAsString() {
+        return this.errorType;
     }
     send(res) {
         res.statusCode = this.errorCode;

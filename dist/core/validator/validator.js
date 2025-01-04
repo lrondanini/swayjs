@@ -32,7 +32,6 @@ export class Validator {
             const p = props[k];
             errors = [...errors, ...this.validate(p, json)];
         }
-        console.log(errors);
         return {
             passed: errors.length === 0 ? true : false,
             errors: errors

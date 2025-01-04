@@ -27,7 +27,8 @@ declare class HttpException {
     private description?;
     private errorCode;
     constructor(et: ErrorType, message: string, description?: string);
-    private findCode;
+    getCode(): number;
+    getTypeAsString(): ErrorType;
     send(res: ServerResponse): void;
 }
 export declare class BadRequestException extends HttpException {
