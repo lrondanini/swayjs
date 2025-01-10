@@ -1,6 +1,6 @@
 # <img src="./logo.png" width="20" /> swayjs
 
-**Forget what you know about web frameworks, swayjs is different**
+**Forget what you know about web frameworks, swayjs is different!**
 
 [![NPM Version][npm-version-image]][npm-url]
 [![NPM Install Size][npm-install-size-image]][npm-install-size-url]
@@ -23,7 +23,8 @@ server.run();
 ## Table of contents
 
 * [Installation](#Installation)
-* [Features](#Features)
+* [File-system Based Router](#File-system-Based-Router)
+* [Runtime Validators](#Runtime-Validators-(Super-fast))
 
 
 ## Installation
@@ -38,7 +39,30 @@ Installation is done using the
 npm install swayjs
 ```
 
-## Features
+## File-system Based Router
+
+
+Swayjs is the first web framework to adopt a file-system based router similar to NextJS. When a file is added to the routes directory it's automatically available as a route. 
+
+## Runtime Validators (Super-fast) 
+
+Swayjs comes with a completelly new validation system. This feature enables developers to ensure type safety in their applications, leveraging TypeScript’s static typing while also providing runtime validation. Instead of defining additional schemas, you can simply utilize the pure TypeScript type itself.
+
+For example, to validate a post body for a signup form:
+```js
+export class NewSignup  {
+  password: string & ValidationRule.MaxLength<20> & ValidationRule.MinLength<5>;
+  email: string & ValidationRule.Format<'email'>;
+  url?: string & ValidationRule.Format<'url'>;
+}
+```
+
+
+
+* Dependency Injections
+* Observer Pattern
+
+
 
 [npm-url]: https://www.npmjs.com/package/swayjs
 [npm-version-image]: https://badgen.net/npm/v/swayjs
