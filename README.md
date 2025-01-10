@@ -24,7 +24,7 @@ server.run();
 
 * [Installation](#Installation)
 * [File-system Based Router](#File-system-Based-Router)
-* [Runtime Validators](#Runtime-Validators-(Super-fast))
+* [Runtime Validators](#Runtime-Validators)
 
 
 ## Installation
@@ -44,7 +44,7 @@ npm install swayjs
 
 Swayjs is the first web framework to adopt a file-system based router similar to NextJS. When a file is added to the routes directory it's automatically available as a route. 
 
-## Runtime Validators (Super-fast) 
+## Runtime Validators
 
 Swayjs comes with a completelly new validation system. This feature enables developers to ensure type safety in their applications, leveraging TypeScript’s static typing while also providing runtime validation. Instead of defining additional schemas, you can simply utilize the pure TypeScript type itself.
 
