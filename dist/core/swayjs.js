@@ -12,6 +12,12 @@ export default class SwayJs {
     static async CreateServer(config, logManager) {
         const server = new SwayJs(config, logManager);
         await server.initRouters();
+        if (!config.hideRoutesListOnLoad) {
+            console.log('\x1b[35m');
+            console.log('Routes:');
+            console.log('  ' + server.getRouterMap());
+            console.log('\x1b[0m');
+        }
         return server;
     }
     constructor(config, logManager) {
@@ -26,6 +32,18 @@ export default class SwayJs {
         this.requestValidator = new Validator();
         this.branchMiddlewares = {};
         this.branchMiddlewaresList = [];
+        this.printLogo();
+    }
+    printLogo() {
+        if (!this.configuration.hideLogo) {
+            console.log('\x1b[36m');
+            console.log('powered by');
+            console.log(' _____      ____ _ _   _ (_)___ ');
+            console.log('/ __\\ \\ /\\ / / _` | | | || / __|');
+            console.log('\\__ \\\\ V  V / (_| | |_| || \\__ \\');
+            console.log('|___/ \\_/\\_/ \\__,_|\\__, |/ |___/');
+            console.log('                   |___/__/     \x1b[0m');
+        }
     }
     addBranchMiddleware(routeInfo, routeClass) {
         this.branchMiddlewares[routeInfo] = routeClass;
@@ -208,7 +226,7 @@ export default class SwayJs {
                 this.handleRequest(req, res);
             });
         }
-        this.logManager.log('Listening on port: ' + this.configuration.port);
+        this.logManager.log('\x1b[34mListening on port: ' + this.configuration.port + '\x1b[0m\n');
         this.server.listen(this.configuration.port);
     }
     async use(fn) {

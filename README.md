@@ -1,6 +1,4 @@
 # swayjs
 
-TODO: BranchMiddleware -> middleware that applies to a specific route and its children
-
-Patch endpoint support!
+<!-- ![alt text](http://url/to/img.png) -->
 

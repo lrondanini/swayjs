@@ -10,6 +10,8 @@ export interface SwayJsConfiguration {
     routesFolder?: string;
     corsOptions?: CorsOptions;
     noCorsMode?: boolean;
+    hideLogo?: boolean;
+    hideRoutesListOnLoad?: boolean;
 }
 export type MiddlewareFunction = (req: IncomingMessage, res: ServerResponse, reqContext?: RequestContext) => RequestContext | undefined | Promise<RequestContext | undefined>;
 export default class SwayJs {
@@ -25,6 +27,7 @@ export default class SwayJs {
     private branchMiddlewaresList;
     static CreateServer(config: SwayJsConfiguration, logManager?: ILogger): Promise<SwayJs>;
     constructor(config: SwayJsConfiguration, logManager?: ILogger);
+    private printLogo;
     private addBranchMiddleware;
     private applyBranchMiddlewares;
     private initRouters;
