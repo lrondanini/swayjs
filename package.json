@@ -3,7 +3,7 @@
   "author": "Luca Rondanini",
   "license": "ISC",
   "private": false,
-  "version": "0.0.32",
+  "version": "0.0.33",
   "description": "The best web framework for Node.js",
   "homepage": "https://github.com/lrondanini/swayjs#readme",
   "main": "dist/index.js",
