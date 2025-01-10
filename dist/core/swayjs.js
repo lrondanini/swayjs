@@ -24,6 +24,23 @@ export default class SwayJs {
         this.logManager = new Logger(logManager);
         this.corsManager = new CorsManager(config.corsOptions);
         this.requestValidator = new Validator();
+        this.branchMiddlewares = {};
+        this.branchMiddlewaresList = [];
+    }
+    addBranchMiddleware(routeInfo, routeClass) {
+        this.branchMiddlewares[routeInfo] = routeClass;
+        this.branchMiddlewaresList.push(routeInfo);
+        this.branchMiddlewaresList = this.branchMiddlewaresList.sort((a, b) => a.length - b.length);
+    }
+    async applyBranchMiddlewares(route, requestContext) {
+        if (this.branchMiddlewaresList.length === 0) {
+            return requestContext;
+        }
+        for (const mw of this.branchMiddlewaresList) {
+            if (route.startsWith(mw)) {
+                requestContext = await this.branchMiddlewares[mw].BranchMiddleware(requestContext);
+            }
+        }
     }
     async initRouters() {
         const r = FindMyWay({
@@ -52,10 +69,14 @@ export default class SwayJs {
                 }
             }
             const routeClass = new routeClassImported(this.appContext);
+            if (routeInfo.hasBranchMiddleware) {
+                this.addBranchMiddleware(routeInfo.route, routeClass);
+            }
             const _self = this;
             for (const method of routeInfo.methods) {
                 r.on(method.restMethod, routeInfo.route, async function (req, res, params, store, searchParams) {
-                    _self.handleRoute(req, res, params, searchParams, method, routeClass, this);
+                    const reqCtx = await _self.applyBranchMiddlewares(routeInfo.route, this);
+                    _self.handleRoute(req, res, params, searchParams, method, routeClass, reqCtx);
                 });
             }
         }
@@ -65,19 +86,6 @@ export default class SwayJs {
         let skipValidation = false;
         let blockExecution = false;
         const requestLogger = new RequestLogger(this.logManager);
-        if (routeClass['BeforeRequest']) {
-            try {
-                requestContext = await routeClass['BeforeRequest'](method.name, requestContext);
-            }
-            catch (err) {
-                blockExecution = true;
-                this.logManager.error(err);
-                const e = new InternalServerErrorException(err.message);
-                requestLogger.setError(e.getCode(), e.getTypeAsString());
-                e.send(res);
-                requestLogger.log(req);
-            }
-        }
         let body;
         if (!blockExecution) {
             if (method.aspectsParams) {
@@ -103,10 +111,13 @@ export default class SwayJs {
                         body = searchParams;
                     }
                 }
-                else if (method.restMethod == RestMethod.POST || method.restMethod == RestMethod.PUT) {
+                else if (method.restMethod == RestMethod.POST || method.restMethod == RestMethod.PUT || method.restMethod == RestMethod.PATCH) {
                     skipValidation = routeClass['skipPostInputValidation'];
                     if (!skipValidation) {
                         skipValidation = routeClass['skipPutInputValidation'];
+                    }
+                    if (!skipValidation) {
+                        skipValidation = routeClass['skipPatchInputValidation'];
                     }
                     try {
                         body = await this.getBody(req);
@@ -135,10 +146,12 @@ export default class SwayJs {
                     }
                     else {
                         let result;
+                        let noErrors = true;
                         try {
                             result = await routeClass[method.name](requestContext, body, params);
                         }
                         catch (e) {
+                            noErrors = false;
                             result = undefined;
                             this.logManager.error(e);
                             const err = new InternalServerErrorException(e.message);
@@ -146,8 +159,13 @@ export default class SwayJs {
                             err.send(res);
                             requestLogger.log(req);
                         }
-                        if (result) {
-                            res.end(JSON.stringify(result));
+                        if (noErrors) {
+                            if (result) {
+                                res.end(JSON.stringify(result));
+                            }
+                            else {
+                                res.end();
+                            }
                             requestLogger.log(req);
                         }
                     }

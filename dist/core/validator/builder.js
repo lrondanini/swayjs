@@ -23,6 +23,7 @@ export var BaseTypes;
     BaseTypes["Object"] = "object";
 })(BaseTypes || (BaseTypes = {}));
 const utilForMatching = [ValidationRule.MaxLength, ValidationRule.MinLength, ValidationRule.Contains, ValidationRule.Format, ValidationRule.Min, ValidationRule.Max, ValidationRule.Custom];
+const utilForParsingTypes = ['.minlength', '.contains', '.max', '.min', '.maxlength', '.format', '.custom',];
 export default class ValidatorFactory {
     constructor() {
         this.currentParsedFile = '';
@@ -116,7 +117,7 @@ export default class ValidatorFactory {
             rules.and.push({ rule: ValidationRule.IsType, type: BaseTypes.Number, key: 'is-type-number' });
         }
         else if (type.isObject()) {
-            if (type.getText().toLowerCase().includes('ValidationRule'.toLowerCase())) {
+            if (this.isValidationRule(type.getText().toLowerCase())) {
                 const t = type.getText().split('.');
                 const rule = t[t.length - 1];
                 rules.and.push(this.parseValidationRule(rule));
@@ -204,6 +205,14 @@ export default class ValidatorFactory {
                 return item;
             }
         }
+    }
+    isValidationRule(rule) {
+        for (const item of utilForMatching) {
+            if (rule.includes(item)) {
+                return true;
+            }
+        }
+        return false;
     }
     parseValidationRule(rule) {
         const ruleName = this.getRuleName(rule);

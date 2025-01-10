@@ -33,9 +33,9 @@
   },
   "dependencies": {
     "find-my-way": "^9.1.0",
+    "ts-morph": "^24.0.0",
     "typescript": "^5.6.3",
-    "vary": "^1.1.2",
-    "ts-morph": "^24.0.0"
+    "vary": "^1.1.2"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",

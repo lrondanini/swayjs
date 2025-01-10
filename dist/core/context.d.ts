@@ -1,4 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
+import { RestMethod } from './types';
 export declare class AppContext {
     private props;
     constructor();
@@ -11,6 +12,7 @@ export declare class RequestContext {
     private req;
     private res;
     constructor(req: IncomingMessage, res: ServerResponse);
+    getMethod(): RestMethod;
     getRequest(): IncomingMessage;
     getResponse(): ServerResponse;
     add(name: string, value: any): void;

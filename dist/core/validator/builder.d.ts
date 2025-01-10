@@ -48,6 +48,7 @@ export default class ValidatorFactory {
     private parseObject;
     private parseArray;
     private getRuleName;
+    private isValidationRule;
     private parseValidationRule;
     private isOptional;
 }

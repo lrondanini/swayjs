@@ -17,6 +17,7 @@ export interface RouteInfo {
     className: string;
     methods: MethodInfo[];
     route: string;
+    hasBranchMiddleware: boolean;
 }
 export default class Builder {
     private logManager;

@@ -18,6 +18,9 @@ export class RequestContext {
         this.res = res;
         this.props = {};
     }
+    getMethod() {
+        return this.req.method.toUpperCase();
+    }
     getRequest() {
         return this.req;
     }

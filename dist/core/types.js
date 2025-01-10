@@ -5,19 +5,6 @@ export var RestMethod;
     RestMethod["PUT"] = "PUT";
     RestMethod["DELETE"] = "DELETE";
     RestMethod["OPTIONS"] = "OPTIONS";
+    RestMethod["PATCH"] = "PATCH";
 })(RestMethod || (RestMethod = {}));
-export class Context {
-    constructor() {
-        this.props = {};
-    }
-    add(name, value) {
-        this.props[name] = value;
-    }
-    remove(name) {
-        delete this.props[name];
-    }
-    get(name) {
-        return this.props[name];
-    }
-}
 //# sourceMappingURL=types.js.map

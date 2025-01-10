@@ -37,6 +37,7 @@ export default class Builder {
                             let methodsInfos = [];
                             const methods = classDef.getMethods();
                             let noServingMethods = true;
+                            let hasBranchMiddleware = false;
                             methods.forEach((method) => {
                                 let skip = false;
                                 const methodInfo = {
@@ -65,8 +66,15 @@ export default class Builder {
                                     noServingMethods = false;
                                     methodInfo.restMethod = RestMethod.OPTIONS;
                                 }
+                                else if (method.getName().toLowerCase() == 'patch') {
+                                    noServingMethods = false;
+                                    methodInfo.restMethod = RestMethod.PATCH;
+                                }
                                 else {
                                     skip = true;
+                                    if (method.getName().toLowerCase() == 'branchmiddleware') {
+                                        hasBranchMiddleware = true;
+                                    }
                                 }
                                 if (!skip) {
                                     let i = 0;
@@ -110,6 +118,7 @@ export default class Builder {
                                 filePath: sourceFile.getFilePath(),
                                 route: route,
                                 className: classDef.getName() || '',
+                                hasBranchMiddleware: hasBranchMiddleware,
                                 methods: methodsInfos
                             });
                         }
