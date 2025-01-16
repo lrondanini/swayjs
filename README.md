@@ -24,6 +24,8 @@ server.run();
 
 * [Installation](#Installation)
 * [File-system Based Router](#File-system-Based-Router)
+* [Middleware](#Middleware)
+* [Context](#Context)
 * [Runtime Validators](#Runtime-Validators)
 
 
