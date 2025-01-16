@@ -127,6 +127,16 @@ export default class Router implements Route {
 }
 ```
 
+# Middleware
+
+## CORS
+
+# Context
+
+## AppContext
+
+## RequestContext
+
 # Runtime Validators
 
 SwayJS comes with a completelly new validation system. This feature enables developers to ensure type safety in their applications, leveraging TypeScript’s static typing while also providing runtime validation. Instead of defining additional schemas, you can simply utilize the pure TypeScript type itself.
