@@ -11,6 +11,7 @@
 
 * [Project Overview and Status](#project-overview-and-status)
 * [Installation and Requirements](#installation-and-requirements)
+* [Getting Started](#getting-started)
 * [File-system Based Router](#File-system-Based-Router)
 * [Middleware](#Middleware)
 * [Context](#Context)
