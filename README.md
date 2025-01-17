@@ -168,7 +168,7 @@ export default class MyRoute implements Route {
 Just like express.js, SwayJS supports middleware functions. A middleware function can be registered as follow:
 
 ```js
-server.use(async (req:IncomingMessage, res:ServerResponse, requestContext: RequestContext) => {    
+server.use(async (requestContext: RequestContext) => {    
   return requestContext; //optional - see below
 })
 ```
