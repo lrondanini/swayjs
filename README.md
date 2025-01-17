@@ -9,14 +9,14 @@
 
 # Table of contents
 
-* [Project Status](#project-status)
+* [Project Overview and Status](#project-overview-and-status)
 * [Installation and Requirements](#installation-and-requirements)
 * [File-system Based Router](#File-system-Based-Router)
 * [Middleware](#Middleware)
 * [Context](#Context)
 * [Runtime Validators](#Runtime-Validators)
 
-# Project Status
+# Project Overview and Status
 
 SwayJS is not ready for production. 
 
