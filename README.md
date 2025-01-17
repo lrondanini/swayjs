@@ -120,7 +120,7 @@ or
 
 ## Route Interface
 
-Every route must contain a class that implements the Route interface. This is the Route interface:
+Every route must contain and **export** a class that implements the Route interface. This is the Route interface:
 
 ```js
 export interface Route {
@@ -165,7 +165,55 @@ export default class Router implements Route {
 
 # Middleware
 
+Just like express.js, SwayJS supports middleware functions. A middleware function can be registered as follow:
+
+```js
+server.use(async (req:IncomingMessage, res:ServerResponse, requestContext: RequestContext) => {    
+  return requestContext; //optional - see below
+})
+```
+
+a middleware function is defined as:
+
+```js
+type MiddlewareFunction = (req: IncomingMessage, res: ServerResponse, reqContext: RequestContext) => RequestContext | undefined | Promise<RequestContext | undefined>;
+
+```
+
+If you are familiar with express.js, you may have notice that there is no *next* function in SwayJS.
+
+Middlewares functions are executed according to the order they are registered in the server.
+
+Another important feature is the RequestContext. If you want to attach information/data to request, you can do so adding resources to the request context. The request context is passed from middleware to middleware till it reaches the request handler. You can read more about contexts [here](#context).
+
 ## CORS
+
+SwayJS supports cors out of the box. Cors options can be specified in the server configuration implementing this interface:
+
+```js
+interface CorsOptions {
+  /**
+   * @default '*''
+   */
+  origin?: StaticOrigin | CustomOrigin | undefined;
+  /**
+   * @default 'GET,HEAD,PUT,PATCH,POST,DELETE'
+   */
+  methods?: string | string[] | undefined;
+  allowedHeaders?: string | string[] | undefined;
+  exposedHeaders?: string | string[] | undefined;
+  credentials?: boolean | undefined;
+  maxAge?: number | undefined;
+  /**
+   * @default false
+   */
+  preflightContinue?: boolean | undefined;
+  /**
+   * @default 204
+   */
+  optionsSuccessStatus?: number | undefined;
+}
+```
 
 # Context
 
@@ -186,10 +234,47 @@ export class NewSignup  {
 }
 ```
 
+# Server Configuration
 
+To use HTTPS, just specify key and cert options. _hideLogo_ and _hideRoutesListOnLoad_ can be used to control what the server logs on startup.
 
-* Dependency Injections
-* Observer Pattern
+```js
+interface SwayJsConfiguration {
+  port: number;
+  key?: string;
+  cert?: string;
+  routesFolder?: string;
+  corsOptions?: CorsOptions;
+  noCorsMode?: boolean;
+  hideLogo?: boolean;
+  hideRoutesListOnLoad?: boolean;
+}
+```
+
+## Custom Logger
+
+To use your preferred logger, you can create a class that implements the following interface:
+
+```js
+ interface ILogger {
+  log(message: any, ...optionalParams: any[]): void;
+  fatal(message: any, ...optionalParams: any[]): void;
+  error(message: any, ...optionalParams: any[]): void;
+  warn(message: any, ...optionalParams: any[]): void;
+  debug(message: any, ...optionalParams: any[]): void;
+  verbose(message: any, ...optionalParams: any[]): void;
+}
+```
+
+and pass it as a parameter to the SwayJS construtor as follow:
+
+```js
+const myLogger = new MyLogger();
+const server = await SwayJs.CreateServer({ port: 3000 }, myLogger);
+```
+
+# Dependency Injections
+# Observer Pattern
 
 
 
