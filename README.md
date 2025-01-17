@@ -19,6 +19,12 @@
 
 # Project Overview and Status
 
+### Why?
+
+
+
+### Status
+
 SwayJS is not ready for production. 
 
 
