@@ -146,7 +146,7 @@ We will discuss validators, contexts and middlewares later on. For now, a simple
 ```js
 import { Route, AppContext, RouteParams, RequestContext } from 'swayjs';
 
-export default class Router implements Route {
+export default class MyRoute implements Route {
   private appContext: AppContext;
 
   constructor(ctx: AppContext) {
@@ -195,7 +195,6 @@ In case you need to perform a series of operations for a specific route and its 
 You can add a middleware to specific route(s) by implementing the BranchMiddleware function in a route class:
 
 ```js
-
 export default class Router implements Route {
   
   ...
@@ -218,6 +217,27 @@ A BranchMiddleware will be executed for the specific route and all its subroutes
 
 If you implement a BranchMiddleware on /users/contacts, this will also run for /users/contacts/phone
 
+*What if I want to run a middleware only for /users/contacts and not for /users/contacts/phone?* 
+
+Well...
+
+```js
+export default class Contacts implements Route {
+  
+  ...
+  
+  async MyMiddleware(reqCtx: RequestContext): Promise<RequestContext> | RequestContext;
+
+
+  async Get(reqCtx: RequestContext, queryParameters?: any, routeParams?: RouteParams) {
+    this.MyMiddleware(reqCtx);
+    
+    ...
+  }
+
+  ...
+}
+```
 
 ## CORS
 
@@ -250,11 +270,59 @@ interface CorsOptions {
 
 # Context
 
+SwayJS has 2 types of contexts: AppContext and RequestContext. Both implement the following interface:
 
+```js
+interface xxxContext {
+   add(name: string, value: any);
+   remove(name: string);
+   get(name: string):any;
+}
+```
 
 ## AppContext
 
+AppContext is used to share resource with the whole server. For example, to register a db connection:
+
+```js
+const postgresql = new DbConnection();
+
+server.addToAppContext('postgresql', postgresql);
+```
+
+The connection will be accessible to every route:
+
+```js
+export default class MyRoute implements Route {
+
+  async Get(reqCtx: RequestContext, queryParameters?: any, routeParams?: RouteParams) {
+    const postgresql:DbConnection = this.appContext,get('postgresql');
+    
+  }
+
+}
+```
+
+
 ## RequestContext
+
+RequestContexts are used to share resources through middlewares to the request handler. See [middlewares](#middlewares) for more details.
+
+RequestContext offers 3 additional functions to the ones described above:
+
+```js
+interface RequestContext {
+   add(name: string, value: any);
+   remove(name: string);
+   get(name: string):any;
+
+   getMethod(): RestMethod;
+   getRequest(): IncomingMessage;
+   getResponse(): ServerResponse
+}
+```
+
+*getMethod()* is used to access the REST method of the specific request, while *getRequest()* and *getResponse()* are used to access the request and response objects of the specific request.
 
 # Runtime Validators
 
