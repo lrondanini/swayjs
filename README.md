@@ -5,6 +5,11 @@
 [![NPM Version][npm-version-image]][npm-url]
 [![NPM Install Size][npm-install-size-image]][npm-install-size-url]
 
+
+## Project status
+
+SwayJS is not ready for production. 
+
 ```js
 import SwayJs from "swayjs";
 
@@ -29,7 +34,7 @@ server.run();
 * [Runtime Validators](#Runtime-Validators)
 
 
-# Installation
+# Installation and Requirements
 
 Before installing, [download and install Node.js](https://nodejs.org/en/download/).
 Node.js 18 or higher is required.
