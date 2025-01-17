@@ -20,7 +20,7 @@ const server = await SwayJs.CreateServer(config);
 server.run();
 ```
 
-## Table of contents
+# Table of contents
 
 * [Installation](#Installation)
 * [File-system Based Router](#File-system-Based-Router)
