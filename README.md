@@ -29,7 +29,7 @@ server.run();
 * [Runtime Validators](#Runtime-Validators)
 
 
-## Installation
+# Installation
 
 Before installing, [download and install Node.js](https://nodejs.org/en/download/).
 Node.js 18 or higher is required.
