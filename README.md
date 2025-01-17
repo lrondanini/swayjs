@@ -184,7 +184,7 @@ If you are familiar with express.js, you may have notice that there is no *next*
 
 Middlewares functions are executed according to the order they are registered in the server.
 
-Another important feature is the RequestContext. If you want to attach information/data to request, you can do so adding resources to the request context. The request context is passed from middleware to middleware till it reaches the request handler. You can read more about contexts [here](#context).
+Another important feature is the RequestContext. If you want to attach information/data to requests, you can do so adding resources to the request context. The request context is passed from middleware to middleware till it reaches the request handler. You can read more about contexts [here](#context).
 
 ## CORS
 
@@ -223,9 +223,9 @@ interface CorsOptions {
 
 # Runtime Validators
 
-SwayJS comes with a completelly new validation system. This feature enables developers to ensure type safety in their applications, leveraging TypeScript’s static typing while also providing runtime validation. Instead of defining additional schemas, you can simply utilize the pure TypeScript type itself.
+SwayJS comes with a completely new validation system. This feature enables developers to ensure type safety in their applications, leveraging TypeScript’s static typing while also providing runtime validation. Instead of defining additional schemas, you can simply utilize the pure TypeScript type itself.
 
-For example, to validate a post body for a signup form:
+For example, to validate a post body for a sign-up form:
 ```js
 export class NewSignup  {
   password: string & ValidationRule.MaxLength<20> & ValidationRule.MinLength<5>;
