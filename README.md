@@ -21,21 +21,25 @@
 
 ### Why?
 
+There are many nodejs web frameworks. Some good, some not. Some performant, some not. One minimalistic, most not. 
 
+If like me you are frustrated by complicated infrastructures deeply coupled with your business logic. Nauseated by endless types and schema definition to properly support data validation and serialization. You are in the right place.
 
 ### Status
 
-SwayJS is not ready for production. 
+SwayJS is not ready for production. The source code is still been tested and cleaned up and it's not ready to receive external PRs. 
 
+That said, I would greatly appreciate anyone who would spend 10 minutes to install SwayJS to take it for a spin. I'm sure you wont be disappointed. 
 
 
 # Installation and Requirements
 
-Before installing, [download and install Node.js](https://nodejs.org/en/download/).
-Node.js 18 or higher is required.
 
-Installation is done using the
-[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
+### Requirements
+
+Despite the name, SwayJS requires typescript. JS will be supported in the future but given the early stage of the project and that not many BE projects require JS, we decided to wait to support JS.
+
+### Installation
 
 ```bash
 npm install swayjs
@@ -43,17 +47,23 @@ npm install swayjs
 
 # Getting Started
 
+This is the structure of a SwayJS project:
+
+```bash
+|-yourProjectName/
+    |- package.json
+    |- main.ts
+    |- routes/
+```
+
+SwayJS uses a [file-system based router](#File-system-Based-Router) and the routes folder is where your routes will be stored. 
+
+For the main.ts file, this is all you need:
+
 ```js
 import SwayJs from "swayjs";
 
-const app = express()
-
-const config = {
-  port: 3004,
-  routesFolder: './src/routes',
-}
-
-const server = await SwayJs.CreateServer(config);
+const server = await SwayJs.CreateServer({ port: 3000 });
 
 server.run();
 ```
