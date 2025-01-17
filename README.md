@@ -13,7 +13,7 @@
 * [Installation and Requirements](#installation-and-requirements)
 * [Getting Started](#getting-started)
 * [File-system Based Router](#File-system-Based-Router)
-* [Middleware](#Middleware)
+* [Middlewares](#Middlewares)
 * [Context](#Context)
 * [Runtime Validators](#Runtime-Validators)
 
@@ -163,7 +163,7 @@ export default class Router implements Route {
 }
 ```
 
-# Middleware
+# Middlewares
 
 Just like express.js, SwayJS supports middleware functions. A middleware function can be registered as follow:
 
@@ -176,15 +176,48 @@ server.use(async (req:IncomingMessage, res:ServerResponse, requestContext: Reque
 a middleware function is defined as:
 
 ```js
-type MiddlewareFunction = (req: IncomingMessage, res: ServerResponse, reqContext: RequestContext) => RequestContext | undefined | Promise<RequestContext | undefined>;
+type MiddlewareFunction = (reqContext: RequestContext) => RequestContext | undefined | Promise<RequestContext | undefined>;
 
 ```
+*NOTE:* You can use RequestContext.getRequest() and RequestContext.getResponse() to access req: IncomingMessage and res: ServerResponse.
 
 If you are familiar with express.js, you may have notice that there is no *next* function in SwayJS.
 
 Middlewares functions are executed according to the order they are registered in the server.
 
 Another important feature is the RequestContext. If you want to attach information/data to requests, you can do so adding resources to the request context. The request context is passed from middleware to middleware till it reaches the request handler. You can read more about contexts [here](#context).
+
+
+## Branch Middlewares
+
+In case you need to perform a series of operations for a specific route and its subroutes, you can use branch middlewares.
+
+You can add a middleware to specific route(s) by implementing the BranchMiddleware function in a route class:
+
+```js
+
+export default class Router implements Route {
+  
+  ...
+  
+  async BranchMiddleware(reqCtx: RequestContext): Promise<RequestContext> | RequestContext;
+
+  ...
+}
+```
+
+The BranchMiddleware function will be executed as last middleware before the handler function and follows all the rules of a normal middleware.
+
+A BranchMiddleware will be executed for the specific route and all its subroutes. For example, let's assume you have the following routes:
+
+```bash
+/users
+/users/contacts
+/users/contacts/phone
+```
+
+If you implement a BranchMiddleware on /users/contacts, this will also run for /users/contacts/phone
+
 
 ## CORS
 
@@ -216,6 +249,8 @@ interface CorsOptions {
 ```
 
 # Context
+
+
 
 ## AppContext
 
