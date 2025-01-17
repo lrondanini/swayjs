@@ -29,7 +29,7 @@ If like me you are frustrated by complicated infrastructures deeply coupled with
 
 SwayJS is not ready for production. The source code is still been tested and cleaned up and it's not ready to receive external PRs. 
 
-That said, I would greatly appreciate anyone who would spend 10 minutes to install SwayJS to take it for a spin. I'm sure you wont be disappointed. 
+That said, I would greatly appreciate anyone who would spend 10 minutes to install SwayJS and take it for a spin. I'm sure you wont be disappointed. 
 
 
 # Installation and Requirements
@@ -103,12 +103,19 @@ Notice **related-products.ts**. You can specify the endpoint for a route by the 
 
 ### Route parameters
 
-To specify route parameters you can use square brackets around the name of the route. This can be done with folder based or file based routes. For example:
+To specify route parameters you can use square brackets around the name of the route. This can be done with both folder based and file based routes. For example:
 
 ```bash
 |-routes/
     |- [productId]
           |- index.ts
+```
+
+or 
+
+```bash
+|-routes/
+    |- [productId].ts
 ```
 
 ## Route Interface
