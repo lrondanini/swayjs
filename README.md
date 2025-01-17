@@ -6,9 +6,35 @@
 [![NPM Install Size][npm-install-size-image]][npm-install-size-url]
 
 
-## Project status
+
+# Table of contents
+
+* [Project Status](#project-status)
+* [Installation and Requirements](#installation-and-requirements)
+* [File-system Based Router](#File-system-Based-Router)
+* [Middleware](#Middleware)
+* [Context](#Context)
+* [Runtime Validators](#Runtime-Validators)
+
+# Project Status
 
 SwayJS is not ready for production. 
+
+
+
+# Installation and Requirements
+
+Before installing, [download and install Node.js](https://nodejs.org/en/download/).
+Node.js 18 or higher is required.
+
+Installation is done using the
+[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
+
+```bash
+npm install swayjs
+```
+
+# Getting Started
 
 ```js
 import SwayJs from "swayjs";
@@ -23,27 +49,6 @@ const config = {
 const server = await SwayJs.CreateServer(config);
 
 server.run();
-```
-
-# Table of contents
-
-* [Installation and Requirements](#installation-and-requirements)
-* [File-system Based Router](#File-system-Based-Router)
-* [Middleware](#Middleware)
-* [Context](#Context)
-* [Runtime Validators](#Runtime-Validators)
-
-
-# Installation and Requirements
-
-Before installing, [download and install Node.js](https://nodejs.org/en/download/).
-Node.js 18 or higher is required.
-
-Installation is done using the
-[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
-
-```bash
-npm install swayjs
 ```
 
 # File-system Based Router
