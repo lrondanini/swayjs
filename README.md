@@ -27,7 +27,7 @@ server.run();
 
 # Table of contents
 
-* [Installation](#Installation)
+* [Installation and Requirements](#installation-and-requirements)
 * [File-system Based Router](#File-system-Based-Router)
 * [Middleware](#Middleware)
 * [Context](#Context)
