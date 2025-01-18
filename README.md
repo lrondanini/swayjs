@@ -12,10 +12,10 @@
 * [Project Overview and Status](#project-overview-and-status)
 * [Installation and Requirements](#installation-and-requirements)
 * [Getting Started](#getting-started)
-* [File-system Based Router](#File-system-Based-Router)
-* [Middlewares](#Middlewares)
-* [Context](#Context)
-* [Runtime Validators](#Runtime-Validators)
+* [File-system Based Router](#file-system-based-router)
+* [Middlewares](#middlewares)
+* [Context](#context)
+* [Runtime Validators](#runtime-validators-and-transformers)
 
 # Project Overview and Status
 
@@ -300,7 +300,7 @@ export default class MyRoute implements Route {
   constructor(ctx: AppContext) {
     this.appContext = ctx;    
   }
-  
+
   async Get(reqCtx: RequestContext, queryParameters?: any, routeParams?: RouteParams) {
     const postgresql:DbConnection = this.appContext,get('postgresql');
     
@@ -330,11 +330,12 @@ interface RequestContext {
 
 *getMethod()* is used to access the REST method of the specific request, while *getRequest()* and *getResponse()* are used to access the request and response objects of the specific request.
 
-# Runtime Validators
+# Runtime Validators and Transformers
 
-SwayJS comes with a completely new validation system. This feature enables developers to ensure type safety in their applications, leveraging TypeScript’s static typing while also providing runtime validation. Instead of defining additional schemas, you can simply utilize the pure TypeScript type itself.
+One of the most important features of SwayJS is the validation system. Unlike other validation systems that force you to write types and schema definitions, SwayJS leverages TypeScript’s static typing to provide runtime validation.
 
 For example, to validate a post body for a sign-up form:
+
 ```js
 export class NewSignup  {
   password: string & ValidationRule.MaxLength<20> & ValidationRule.MinLength<5>;
@@ -342,6 +343,66 @@ export class NewSignup  {
   url?: string & ValidationRule.Format<'url'>;
 }
 ```
+
+Of course, you can get as fancy as you need with validators. It supports OR and nested objects:
+
+```js
+export class PostDetails  {
+  title: string & (ValidationRule.Contains<'AAAA'> | ValidationRule.Contains<'BBBB'>);
+  details: PostDetails;
+}
+
+export class PostDetails  {
+  firstName: string & ValidationRule.MinLength<5>;
+  multiple?: string[] & ValidationRule.MaxLength<2>;
+}
+```
+
+### Benchmarks
+
+We benchmarked SwayJS validation system against AJV validators (the validators system that powers FastifyJS making it much faster than other frameworks). 
+
+According to our tests, SwayJS validators performs 15% faster than AJV (let me add - without having to deal with AJV's horrible schemas definitions!).
+
+## Validation Rules
+
+The simplest validation definition is:
+
+```js
+title?: string;
+```
+
+This defines a property named title, optional and of type string. You can also use AND and OR operators (better know as intersection and union types):
+
+```js
+title: string | number;
+```
+
+Now, title must be of type string or number.
+
+## List of Validation Rules
+
+### - ValidationRule.MaxLength\<number>
+
+Can be applied to strings and arrays. Verifies tha the max length of a string or an array is less or equal to number. Example:
+
+```js
+title: string & ValidationRule.MaxLength<10>
+```
+
+title must be a string with no more than 10 characters.
+
+### - ValidationRule.MinLength\<number>
+
+Can be applied to strings and arrays. Verifies tha the min length of a string or an array is greater or equal to number. 
+
+Example:
+
+```js
+names: string[] & ValidationRule.MinLength<5>
+```
+
+names must be an array of strings with at least 5 elements.
 
 # Server Configuration
 
