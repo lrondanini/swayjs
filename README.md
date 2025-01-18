@@ -362,7 +362,7 @@ export class PostDetails  {
 
 We benchmarked SwayJS validation system against AJV validators (the validators system that powers FastifyJS making it much faster than other frameworks). 
 
-According to our tests, SwayJS validators performs 15% faster than AJV (let me add - without having to deal with AJV's horrible schemas definitions!).
+According to our tests, SwayJS validators performs 15% faster than AJV (let me add - without having to deal with AJV's horrible schema definitions!).
 
 ## Validation Rules
 
