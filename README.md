@@ -525,7 +525,6 @@ const myLogger = new MyLogger();
 const server = await SwayJs.CreateServer({ port: 3000 }, myLogger);
 ```
 
-# Dependency Injections
 # Observer Pattern
 
 
