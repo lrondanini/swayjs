@@ -295,6 +295,12 @@ The connection will be accessible to every route:
 ```js
 export default class MyRoute implements Route {
 
+  private appContext: AppContext;
+
+  constructor(ctx: AppContext) {
+    this.appContext = ctx;    
+  }
+  
   async Get(reqCtx: RequestContext, queryParameters?: any, routeParams?: RouteParams) {
     const postgresql:DbConnection = this.appContext,get('postgresql');
     
