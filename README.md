@@ -241,7 +241,7 @@ export default class Contacts implements Route {
 
 ## CORS
 
-SwayJS supports cors out of the box. Cors options can be specified in the server configuration implementing this interface:
+SwayJS supports cors out of the box. Cors options can be specified in the server [configuration](#server-configuration) implementing this interface:
 
 ```js
 interface CorsOptions {
