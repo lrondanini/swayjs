@@ -384,7 +384,7 @@ Now, title must be of type string or number.
 
 ### - ValidationRule.MaxLength\<number>
 
-Can be applied to strings and arrays. Verifies tha the max length of a string or an array is less or equal to number. Example:
+Can be applied to strings and arrays. Verifies that the max length of a string or an array is less or equal to number. Example:
 
 ```js
 title: string & ValidationRule.MaxLength<10>
@@ -394,7 +394,7 @@ title must be a string with no more than 10 characters.
 
 ### - ValidationRule.MinLength\<number>
 
-Can be applied to strings and arrays. Verifies tha the min length of a string or an array is greater or equal to number. 
+Can be applied to strings and arrays. Verifies that the min length of a string or an array is greater or equal to number. 
 
 Example:
 
@@ -402,7 +402,89 @@ Example:
 names: string[] & ValidationRule.MinLength<5>
 ```
 
-names must be an array of strings with at least 5 elements.
+names must be an array of strings with at least 5 elements. 
+
+### - ValidationRule.Max\<number>
+
+Can be applied to numbers. Verifies that a number is less of equal to number. Example:
+
+```js
+price: number & ValidationRule.Max<10>
+```
+
+title must be a string with no more than 10 characters.
+
+### - ValidationRule.Min\<number>
+
+Can be applied to numbers. Verifies that a number is greater of equal to number. Example:
+
+Example:
+
+```js
+price: number & ValidationRule.Min<5>
+```
+
+names must be an array of strings with at least 5 elements. 
+
+### - ValidationRule.Contains\<string | number | boolean>
+
+Can be applied to strings and arrays. Verifies that a string contains the specified string, number or boolean. For arrays, the array must contain at least one element as specified by string, number or boolean.
+
+Example:
+
+```js
+title: string & ValidationRule.Contains<'hello'>
+```
+
+title must contain the word 'hello'.
+
+### - ValidationRule.Format\<string>
+
+Can be applied to strings to verify its correct format. For example:
+
+```js
+email: string & ValidationRule.Format<'email'>
+```
+
+Currently supported formats are:
+
+- url
+- uri
+- uri-template
+- uri-reference
+- email
+- uuid
+- hostname
+- date
+- date-time
+- time
+- duration
+- idn-email
+
+You can also specify a regular expression to match your specific needs. For example:
+
+```js
+uuid: string & ValidationRule.Format</^(?:urn:uuid:)?[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i>
+```
+
+### - ValidationRule.Custom\<string>
+
+You can also use custom validator functions. To register a validator function: 
+
+```js
+const myValidatorFunction = (s:string): boolean => {};
+
+server.addCustomValidationFunction('myFunction', myValidatorFunction);
+```
+
+and the use it as:
+
+```js
+name: string & ValidationRule.Custom<'myFunction'>
+```
+
+
+
 
 # Server Configuration
 
