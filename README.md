@@ -344,7 +344,7 @@ export class NewSignup  {
 }
 ```
 
-Of course, you can get as fancy as you need with validators. It supports OR and nested objects:
+Of course, you can get as fancy as you need with validators. 
 
 ```js
 export class PostDetails  {
