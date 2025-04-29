@@ -525,19 +525,16 @@ const myLogger = new MyLogger();
 const server = await SwayJs.CreateServer({ port: 3000 }, myLogger);
 ```
 
-# Observer Pattern
-
-
 
 [npm-url]: https://www.npmjs.com/package/swayjs
 [npm-version-image]: https://badgen.net/npm/v/swayjs
 [npm-install-size-image]: https://badgen.net/packagephobia/publish/swayjs
 [npm-install-size-url]: https://packagephobia.com/result?p=swayjs
 
-
+<!-- 
 https://opentelemetry.io/docs/languages/js/
 https://typia.io/docs/
 https://www.npmjs.com/package/swayjs
 https://fastify.dev/docs/latest/Reference/ContentTypeParser/
 https://blog.bitsrc.io/typescripts-reflect-metadata-what-it-is-and-how-to-use-it-fb7b19cfc7e2
-https://fastify.dev/docs/v3.29.x/Reference/Encapsulation/
+https://fastify.dev/docs/v3.29.x/Reference/Encapsulation/ -->
